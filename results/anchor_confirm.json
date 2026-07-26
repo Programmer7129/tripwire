@@ -1,0 +1,128 @@
+{
+ "astropy__astropy-12907": {
+  "oracle_wrong": true,
+  "method": "differential-execution",
+  "divergent_input": "(np.array([[1, 0], [0, 1]]), np.array([[0.99999999, 0], [0, 0.99999999]]))",
+  "needs_hand_review": false
+ },
+ "astropy__astropy-13579": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "astropy__astropy-14096": {
+  "oracle_wrong": false,
+  "method": "no-divergence",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "astropy__astropy-14309": {
+  "oracle_wrong": true,
+  "method": "differential-execution",
+  "divergent_input": "('read', 'test.txt', None, hdu_list)",
+  "needs_hand_review": false
+ },
+ "astropy__astropy-14995": {
+  "oracle_wrong": true,
+  "method": "differential-execution",
+  "divergent_input": "(NDArithmeticMixin(mask=[]), dummy_operation, MockOperand(mask=None), dummy_handle_mask, None)",
+  "needs_hand_review": false
+ },
+ "astropy__astropy-7166": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "astropy__astropy-7336": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "astropy__astropy-7671": {
+  "oracle_wrong": false,
+  "method": "no-divergence",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-10880": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-11951": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-13741": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-14493": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-14765": {
+  "oracle_wrong": false,
+  "method": "target-unidentified",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-15695": {
+  "oracle_wrong": false,
+  "method": "no-divergence",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-15731": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-15987": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-16256": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-16454": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-16661": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-16899": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ },
+ "django__django-16938": {
+  "oracle_wrong": false,
+  "method": "uninvokable",
+  "divergent_input": null,
+  "needs_hand_review": true
+ }
+}

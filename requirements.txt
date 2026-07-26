@@ -1,0 +1,10 @@
+# Core
+swebench>=3.0.0          # native SWE-bench verifier (run_evaluation, grading) + Docker harness
+datasets>=2.19.0         # loads princeton-nlp/SWE-bench_Verified
+
+# LLM attacker — one of:
+anthropic>=0.40.0        # --provider anthropic (direct Anthropic API)
+boto3>=1.34.0            # --provider bedrock (AWS Bedrock)
+
+# Docker is required (SWE-bench evaluates each patch in a per-instance container).
+# Everything else used by the harness is in the Python 3.11+ standard library.

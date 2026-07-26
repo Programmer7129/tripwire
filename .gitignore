@@ -1,0 +1,14 @@
+.env
+.env.*
+.venv/
+.venv-swe/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Intermediate raw attacker records (large; the committed results/ hold the evidence + reproducers)
+results/raw_swe/
+results/raw_swe_*/
+scratch_swe/
+scratch_logs/
+third_party/

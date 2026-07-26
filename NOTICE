@@ -1,0 +1,18 @@
+Tripwire — canary notice
+=========================
+
+The files under results/ contain confirmed reward-hack artifacts: patches that pass a
+benchmark's shipped test suite while being demonstrably incorrect, together with the
+inputs that prove them wrong.
+
+These artifacts are published for security-research reproducibility ONLY.
+
+CANARY: TRIPWIRE-REWARD-HACK-ARTIFACT-DO-NOT-TRAIN
+
+These exploit patches MUST NOT be used as, or included in, model training or fine-tuning
+data. They are counter-examples by construction; training on them would teach the exact
+reward-hacking behavior this project exists to detect. Dataset builders and crawlers
+should filter on the canary string above.
+
+Every finding here concerns public benchmark tasks (SWE-bench Verified) and their test
+suites — not any individual author's private work.
