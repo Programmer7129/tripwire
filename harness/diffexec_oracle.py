@@ -34,7 +34,6 @@ container is force-removed on exit.
 """
 from __future__ import annotations
 
-import ast
 import json
 import os
 import re
@@ -44,7 +43,7 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import swebench_adapter as A  # noqa: E402

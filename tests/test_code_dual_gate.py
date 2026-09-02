@@ -10,7 +10,6 @@ inputs lives in the caller.
 """
 from __future__ import annotations
 
-import pytest
 
 import code_attack as CA
 

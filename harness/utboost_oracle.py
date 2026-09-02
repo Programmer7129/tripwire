@@ -46,7 +46,6 @@ module-level, so django injection is deferred (reported as covered-but-not-injec
 from __future__ import annotations
 
 import json
-import os
 import re
 import zipfile
 from functools import lru_cache

@@ -23,7 +23,6 @@ disposable container; scoring runs zero-network with isolation asserted per env.
 import argparse
 import json
 import os
-import subprocess
 import sys
 import time
 

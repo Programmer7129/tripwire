@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tripwire"
+version = "0.1.0"
+description = "An open, deterministic harness that measures how often an RL training verifier accepts a wrong answer, dual-gated against an independent oracle."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Vedant Patel", email = "vedantspatel33@gmail.com" },
+]
+maintainers = [
+    { name = "Vedant Patel", email = "vedantspatel33@gmail.com" },
+]
+keywords = [
+    "reward-hacking",
+    "reinforcement-learning",
+    "verifier",
+    "rl-environment",
+    "swe-bench",
+    "evaluation",
+    "auditing",
+    "differential-execution",
+    "llm",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Testing",
+]
+# The aggregation, oracle and classification code is pure standard library, so
+# the metrics can be recomputed with nothing installed. The parts that RUN an
+# attack need the extras below; requirements.txt installs the same set.
+dependencies = []
+
+[project.optional-dependencies]
+# the SWE-bench lane: native verifier + dataset (also needs Docker)
+swe = [
+    "swebench>=3.0.0",
+    "datasets>=2.19.0",
+]
+# LLM attacker — one of:
+anthropic = ["anthropic>=0.40.0"]
+bedrock = ["boto3>=1.34.0"]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/Programmer7129/tripwire"
+Repository = "https://github.com/Programmer7129/tripwire"
+
+[tool.hatch.build.targets.wheel]
+packages = ["harness"]
+
+[tool.hatch.build.targets.sdist]
+include = ["harness", "docs", "results", "README.md", "LICENSE", "NOTICE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# ruff's default rules. E501 (line length) and E741 (ambiguous `l`) are not
+# enforced: reflowing and renaming inside the modules that produce the published
+# numbers is churn with no correctness payoff.
+select = ["E4", "E7", "E9", "F"]
+ignore = ["E501", "E741"]
+
+[tool.ruff.lint.per-file-ignores]
+# score_env.py and code_pilot_probe.py carry pre-existing local style the lint
+# gate does not police: unused timing locals, a lambda binding, and a packed
+# import inside an in-container probe.
+"harness/score_env.py" = ["F841", "E731"]
+"harness/code_pilot_probe.py" = ["E401"]

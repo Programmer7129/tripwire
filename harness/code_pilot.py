@@ -19,7 +19,6 @@ for a one-off pilot, disclosed here. Reuses runner.assert_isolated + score_env l
 import argparse
 import json
 import os
-import subprocess
 import sys
 import time
 

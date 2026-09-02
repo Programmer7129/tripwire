@@ -41,9 +41,7 @@ and testable with NO Bedrock: inject a deterministic `chat_fn` + `score_fn` and
 the REAL oracle (see harness/tests/test_attacker.py).
 """
 import json
-import os
 import re
-import time
 import urllib.error
 import urllib.request
 

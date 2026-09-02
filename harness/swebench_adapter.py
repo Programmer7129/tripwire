@@ -39,7 +39,7 @@ import sys
 import tempfile
 import uuid
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Iterable, Optional
 
 DATASET_NAME = "princeton-nlp/SWE-bench_Verified"
 SPLIT = "test"
