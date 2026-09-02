@@ -12,3 +12,6 @@ results/raw_swe_*/
 scratch_swe/
 scratch_logs/
 third_party/
+
+# local test virtualenv
+.venv*/
