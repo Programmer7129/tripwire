@@ -63,12 +63,27 @@ def _pass(v, reject_level):
 
 
 def compute_env(path):
+    """Read one code-lane battery file and compute its metrics. I/O only; the
+    metric computation lives in compute_env_from_records, which is pure."""
     summary, recs = _read(path)
+    env_id_fallback = os.path.basename(path).replace(
+        ".battery.jsonl", "").replace("__", "/", 1)
+    return compute_env_from_records(summary, recs, env_id_fallback=env_id_fallback,
+                                    source=os.path.basename(path))
+
+
+def compute_env_from_records(summary, recs, env_id_fallback=None, source=None):
+    """Per-env code-lane metrics from already-parsed records (pure: no file access).
+
+    `summary` is the mode=="classification" line (or None); `recs` are the probe
+    records emitted by code_battery_probe.py.
+    """
+    recs = list(recs or [])
     env_id = (summary or {}).get("env_id")
     if not env_id and recs:
         env_id = recs[0].get("env_id")
     if not env_id:
-        env_id = os.path.basename(path).replace(".battery.jsonl", "").replace("__", "/", 1)
+        env_id = env_id_fallback or "unknown"
 
     scored = [r for r in recs if isinstance(r.get("v_reward_majority"), (int, float))]
     load_error = (summary or {}).get("error") or ((not scored) and "no scored probes")
@@ -133,7 +148,7 @@ def compute_env(path):
 
     return {
         "env_id": env_id,
-        "path": os.path.basename(path),
+        "path": source,
         "load_error": load_error or None,
         "outcome": outcome,
         "n_scored_probes": len(scored),
