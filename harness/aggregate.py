@@ -303,7 +303,22 @@ def _read_battery(path):
 
 
 def compute_env(path, index):
+    """Read one battery file and compute its metrics. I/O only; the metric
+    computation lives in compute_env_from_records, which is pure and testable."""
     summary, records = _read_battery(path)
+    env_id_fallback = os.path.basename(path).replace(
+        ".battery.jsonl", "").replace("__", "/", 1)
+    return compute_env_from_records(summary, records, index,
+                                    env_id_fallback=env_id_fallback)
+
+
+def compute_env_from_records(summary, records, index, env_id_fallback=None):
+    """Per-env metrics from already-parsed records (pure: no file access).
+
+    `summary` is the mode=="classification" line (or None); `records` are the
+    per-(row, probe) lines; `index` maps env_id -> {tags, domain}.
+    """
+    index = index or {}
     # Skip error records (spec: "Records may carry an error field (skip those).")
     scored = [r for r in records if "error" not in r]
     n_error = len(records) - len(scored)
@@ -314,7 +329,7 @@ def compute_env(path, index):
     if not env_id and scored:
         env_id = scored[0].get("env_id")
     if not env_id:
-        env_id = os.path.basename(path).replace(".battery.jsonl", "").replace("__", "/", 1)
+        env_id = env_id_fallback or "unknown"
 
     # verifier_type: prefer the classification summary line (authoritative).
     vtype = None
