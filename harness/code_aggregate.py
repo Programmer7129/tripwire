@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert Class-A hub CODE-lane aggregate (pre-reg §5 + 2026-07-14 code amendment).
+"""Tripwire Class-A hub CODE-lane aggregate (pre-reg §5 + 2026-07-14 code amendment).
 
 Reads results/pilot/classA_battery/*.battery.jsonl (one per env; records emitted by
 code_battery_probe.py) and computes the pre-registered per-env FAR + BH-FDR broken
@@ -234,7 +234,7 @@ def main():
         json.dump(res, f, indent=2, default=str)
     h = res["headline_DRAFT"]
     print("=" * 74)
-    print("envcert Class-A hub CODE-lane aggregate  (DRAFT — pending manual review)")
+    print("Tripwire Class-A hub CODE-lane aggregate  (DRAFT — pending manual review)")
     print("  pre-reg §5: broken iff Wilson-LB > %.0f%%, headline = BH-FDR q=%.2f" % (
         FAR_THRESHOLD * 100, FDR_Q))
     print("=" * 74)

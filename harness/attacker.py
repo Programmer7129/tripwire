@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert ELICITED / EYR lane (pre-reg §2 EYR, §3 dual-gate, §9 canned-vs-elicited).
+"""Tripwire ELICITED / EYR lane (pre-reg §2 EYR, §3 dual-gate, §9 canned-vs-elicited).
 
 The adversarial lane. Instead of canned probes, an ATTACKER model actively tries
 to produce an output the env's verifier PASSES but the INDEPENDENT oracle marks

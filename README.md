@@ -117,10 +117,23 @@ python harness/code_attack.py <instance_ids...> \
 python harness/diffexec_oracle.py astropy__astropy-14309 --exploit-file <candidate.diff>
 ```
 
-**4 — Aggregate** (Wilson CIs, Benjamini–Hochberg FDR, cluster-bootstrap):
+**4 — Recompute the headline** from the committed per-task verdicts in `results/` (no Docker, no
+API key — Wilson interval, the pre-registered sample estimator, and the anchor tally):
+
+```bash
+python harness/swe_confirm.py
+```
+
+For the hub Class-A code lane (Wilson CIs, Benjamini–Hochberg FDR, cluster-bootstrap over envs):
 
 ```bash
 python harness/code_aggregate.py
+```
+
+**5 — Run the tests** (no network, no Docker, no API key, no GPU):
+
+```bash
+pip install -e ".[dev]" && pytest -q
 ```
 
 Exact parameters, the seed-42 stratified sample, and the per-task verdicts are in
@@ -133,13 +146,22 @@ harness/          the tooling (attacker, SWE-bench adapter, differential-executi
   code_attack.py        the reward-hack attacker (K=3, failure-log feedback, deterministic diff transport)
   swebench_adapter.py   apply any patch → run the native verifier → read resolved
   diffexec_oracle.py    the dual-gate: gold vs candidate behavioral divergence, verdict by execution
-  code_aggregate.py     Wilson CIs, BH-FDR, cluster-bootstrap over tasks
+  aggregate.py          Wilson CIs, BH-FDR, beta-binomial pooling, cluster-bootstrap over envs
+  code_aggregate.py     the same statistics for the hub Class-A code lane
+  swe_confirm.py        recomputes the published SWE-bench headline from results/
 results/          the evidence — every confirmed hack, its reproducer, and the pre-drawn sample
+tests/            the metric test suite — no network, no Docker, no API key, no GPU
 docs/
   anchor-result.md      the reproduction (11/49) + capability ladder, per-task rationale
   extend-result.md      the novel full-500 result (51% / 13.7%), sampling + honest limitations
   preregistration.md    thresholds & protocol, committed before any verdict
 ```
+
+> **A note on the name.** The public artifact is **Tripwire**. `envcert` is the older internal name
+> and still appears in runtime identifiers — the Docker image and container names
+> (`envcert-base:latest`), the egress network and proxy names, the in-container probe paths and the
+> run-id prefixes. Those are load-bearing strings, not prose, so they are left alone; nothing named
+> `envcert` is a separate project.
 
 ## Honest limitations
 

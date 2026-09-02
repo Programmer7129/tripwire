@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert egress isolation — allowlist forward-proxy + internal network.
+"""Tripwire egress isolation — allowlist forward-proxy + internal network.
 
 Spec §4 hardening (phase0-log "Residual-risk HARDENING items"):
 untrusted env code runs during `pip install` and `--prepare` (load_environment()

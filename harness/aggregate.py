@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert Phase 2 aggregate statistics.
+"""Tripwire Phase 2 aggregate statistics.
 
 Reads a directory of ``*.battery.jsonl`` files (one per env, one JSON record per
 (row, probe) plus a single ``mode=="classification"`` summary line) and computes
@@ -716,7 +716,7 @@ def print_summary(result):
     bf = result["binary_far"]
     soft = result["soft"]
     print("=" * 72)
-    print("envcert aggregate  (pre-reg §5: Wilson-LB > {:.0%}, BH-FDR q={})".format(
+    print("Tripwire aggregate  (pre-reg §5: Wilson-LB > {:.0%}, BH-FDR q={})".format(
         FAR_THRESHOLD, FDR_Q))
     print("=" * 72)
     print("\nCOVERAGE  (total env files: {})".format(cov["total_env_files"]))
@@ -819,7 +819,7 @@ def pool_eyr(raw_dir):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="envcert Phase 2 aggregate statistics")
+    ap = argparse.ArgumentParser(description="Tripwire Phase 2 aggregate statistics")
     ap.add_argument("--raw", default="results/raw",
                     help="directory of *.battery.jsonl files")
     ap.add_argument("--index", default="results/hub_index.jsonl",
@@ -838,7 +838,7 @@ def main(argv=None):
         with open(out, "w") as fh:
             json.dump(pooled, fh, indent=2, default=str)
         print("=" * 72)
-        print("envcert ELICITED / EYR aggregate (pilot; pre-reg §2 — NOT headlined <150 envs)")
+        print("Tripwire ELICITED / EYR aggregate (pilot; pre-reg §2 — NOT headlined <150 envs)")
         print("=" * 72)
         print(f"  envs: {pooled['n_envs']}   "
               f"EYR-positive (strict, reached anchor + oracle WRONG): "

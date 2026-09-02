@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert differential-execution oracle (04-code-cert-mvp §3) — the CREDIBILITY gate.
+"""Tripwire differential-execution oracle (04-code-cert-mvp §3) — the CREDIBILITY gate.
 
 The dual-gate's independent-WRONG proof, made DETERMINISTIC. Replaces the LLM-authored
 gold-sanity gate as the PRIMARY oracle for a native-resolving SWE-bench candidate.
@@ -637,7 +637,7 @@ def _reproducer(target: dict, div: dict) -> str:
 # --------------------------------------------------------------------------- #
 def _main(argv: Optional[list[str]] = None) -> int:
     import argparse
-    ap = argparse.ArgumentParser(description="envcert differential-execution oracle")
+    ap = argparse.ArgumentParser(description="Tripwire differential-execution oracle")
     ap.add_argument("instance_id")
     ap.add_argument("--exploit-file", required=True,
                     help="candidate diff to gate against the gold patch")

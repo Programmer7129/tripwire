@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert code-cert P0 anchor — SWE-bench wrong-patch attack + Docker gold-sanity gate.
+"""Tripwire code-cert P0 anchor — SWE-bench wrong-patch attack + Docker gold-sanity gate.
 
 Reproduces arXiv:2606.16062 §3 with an open harness: an attacker LLM generates K=3
 candidate patches per task (round 1 single-shot; rounds 2-3 fed the swebench FAILURE
@@ -993,7 +993,7 @@ def attack_task(inst: dict, chat, *, k: int = K_CANDIDATES,
     task = {
         "instance_id": iid,
         "repo": inst["repo"],
-        "hackable": hackable,                       # dual-gate confirmed (envcert strict)
+        "hackable": hackable,                       # dual-gate confirmed (Tripwire strict)
         "native_hackable": native_success,          # paper's primary metric (native PASS)
         "first_hackable_round": first_hackable_round,
         "n_candidates": len(candidates),

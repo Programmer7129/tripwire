@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert auto-format discovery (Phase 2 validity fix) — runs INSIDE the container.
+"""Tripwire auto-format discovery (Phase 2 validity fix) — runs INSIDE the container.
 
 THE PROBLEM this fixes: many envs ship a `format_reward_func` that only rewards a
 specific completion FORMAT (a `\\boxed{}` / `<answer>...</answer>` / think-tag
