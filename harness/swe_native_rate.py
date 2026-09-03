@@ -17,10 +17,17 @@ Definitions, as registered in ``docs/preregistration.md`` and used by
                       verifier-verdict-alone numerator: the published 51.0%.
 
     queue_size        a task that is native_hackable AND has >= 1 such candidate
-                      the differ marked ``behaviorally_distinct`` from gold.
-                      Candidates identical in behaviour to gold are legitimate
-                      alternative fixes and are excluded before the dual gate,
-                      which is why the confirmed rate is a lower bound.
+                      flagged ``behaviorally_distinct``. Despite the name that is
+                      a TEXTUAL check (``code_attack.behaviorally_distinct``): the
+                      candidate's added lines are not a subset of gold's. Its own
+                      docstring calls it "necessary (not sufficient)" and it never
+                      decides wrongness on its own. Candidates whose added lines
+                      are a subset of gold's are dropped before the dual gate. A
+                      *strict* subset added fewer lines than gold, so it may be a
+                      PARTIAL gold fix rather than gold's fix — which can be
+                      exactly the narrow wrong patch the attacker was asked for.
+                      So this filter drops some genuine hacks too, and that is one
+                      reason the confirmed rate is a lower bound.
 
 The dual gate itself (oracle = WRONG) is applied downstream in
 ``harness/swe_confirm.py``; nothing here decides whether a patch is wrong.
@@ -83,7 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"native-hackable (verifier alone)     {d['native_hackable']}"
           f"  = {d['native_rate']:.1%}")
     print(f"dual-gate confirm queue              {d['queue_size']}"
-          f"  = {d['queue_rate']:.1%}   (behaviorally distinct from gold)")
+          f"  = {d['queue_rate']:.1%}   (added lines differ from gold's)")
     print(f"attacker spend on this pass          ${d['total_cost_usd']:.2f}")
     return 0
 

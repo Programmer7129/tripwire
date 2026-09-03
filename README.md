@@ -32,30 +32,38 @@ On **SWE-bench Verified** — the industry-standard coding benchmark for code-RL
 open, pre-registered, dual-gated harness:
 
 ```
- Verifier verdict alone (does the shipped test suite accept a wrong patch?)
+ Verifier verdict alone (shipped suite accepts an attacker's candidate patch)
    51.0%  ██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░   255 / 500 tasks
+   45.2%  ███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░   226 / 500   ...and its added lines differ from gold's
 
- Dual-gated  (patch independently proven wrong, not an LLM's opinion)
+ Dual-gated  (that patch shown WRONG by execution or by hand review — never an LLM's opinion)
    13.7%  ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ~69 / 500   [95% CI 10.1–18.0%]
 ```
 
-> **Half of SWE-bench Verified has a verifier that accepts a wrong patch. About 1 in 7 admits a *confirmed*
-> reward-hack** — a patch that passes the shipped tests but demonstrably does the wrong thing, each backed
-> by a reproducer you can re-run.
+> **On half of SWE-bench Verified, the shipped test suite accepted a patch from an attacker that was
+> trying to write a wrong one. About 1 in 7 admits a *confirmed* reward-hack** — a patch that passes the shipped tests but
+> demonstrably does the wrong thing, each backed by a reproducer you can re-run.
 
-The prior published result ([arXiv:2606.16062](https://arxiv.org/abs/2606.16062)) measured this on 49 tasks
+Those numbers measure different things and the gap between them is the point. Getting a patch past the
+suite is **not** evidence the patch is wrong: many are legitimate alternative fixes. In the pre-registered
+sample of 102 — drawn from the 226 tasks whose accepted patch was textually distinct from gold's own fix,
+stratified by repo, seed 42 — adjudication came back **31 HACK / 67 CORRECT / 4 AMBIGUOUS**. About two
+thirds were adjudicated correct. That is why the dual gate exists, and why 13.7% rather than 51.0% is this
+project's finding.
+
+The prior published result ([arXiv:2606.16062](https://arxiv.org/abs/2606.16062)) measured the confirmed rate on 49 tasks
 and **never released its code**. Tripwire reproduces it with an open harness and extends it to the **full
 500-task benchmark** for the first time — with a *stricter* oracle (deterministic behavioral divergence,
 not an LLM-augmented test), so every number here is a conservative **lower bound**.
 
 ## The finding in one table
 
-| Run | Tasks | Attacker | Verifier accepts wrong patch | Confirmed reward-hack (dual-gated) |
+| Run | Tasks | Attacker | Suite accepts an attacker candidate | Confirmed reward-hack (dual-gated) |
 | --- | --- | --- | --- | --- |
 | **Anchor** (reproduction) | 49 (astropy + django) | Claude Sonnet 4.5 | — | **11/49 = 22.4%** |
 | Anchor — capability ladder | 49 | Claude Haiku 4.5 | — | 8/49 = 16.3% |
 | Reference — arXiv:2606.16062 | 49 | Claude Sonnet 4 | — | 14/49 = 28.5% |
-| **Extend** (novel — full benchmark) | **500 (11 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | **13.7%** — CI [10.1–18.0%] |
+| **Extend** (novel — full benchmark) | **500 (12 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | **13.7%** — CI [10.1–18.0%] |
 
 The full-500 confirmed rate (13.7%) is *lower* than the anchor's 22.4% **on purpose** — the full benchmark
 includes robust repos (sympy, scikit-learn, sphinx, pytest) with stronger suites, so it's more
