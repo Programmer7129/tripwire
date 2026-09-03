@@ -148,7 +148,7 @@ def build_record(results_dir=RESULTS):
     auto = sorted(iid for iid, v in verdicts.items()
                   if v.get("verdict") == "HACK" and v.get("method") == "diffexec")
     record = {
-        # declared inputs (raw_swe_500/ is not committed)
+        # inputs, rederivable from results/raw_swe_500/ via swe_native_rate.py
         "queue_size": declared["queue_size"],
         "total_tasks": declared["total_tasks"],
         "native_hackable": declared["native_hackable"],
@@ -213,9 +213,10 @@ def main(argv=None):
     print("extend  CONFIRMED RATE    %.1f%%  95%% CI [%.1f%%, %.1f%%]  (dual-gated)" % (
         100 * record["confirmed_rate"], 100 * record["confirmed_rate_ci"][0],
         100 * record["confirmed_rate_ci"][1]))
-    print("\nqueue_size, native_hackable and total_tasks are DECLARED inputs "
-          "(results/raw_swe_500/\nis intermediate and not committed); "
-          "everything else above is recomputed from results/.")
+    print("\nqueue_size, native_hackable and total_tasks are read from "
+          "results/swe500_confirmed.json;\nthey are rederived from the committed "
+          "attack records by harness/swe_native_rate.py.\nEverything else above is "
+          "recomputed here from the per-task verdicts in results/.")
     return 0
 
 

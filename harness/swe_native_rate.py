@@ -31,7 +31,6 @@ import argparse
 import glob
 import json
 import os
-import sys
 
 HARNESS = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HARNESS)
