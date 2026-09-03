@@ -117,11 +117,13 @@ python harness/code_attack.py <instance_ids...> \
 python harness/diffexec_oracle.py astropy__astropy-14309 --exploit-file <candidate.diff>
 ```
 
-**4 — Recompute the headline** from the committed per-task verdicts in `results/` (no Docker, no
-API key — Wilson interval, the pre-registered sample estimator, and the anchor tally):
+**4 — Recompute the headline** from the committed evidence in `results/` (no Docker, no API key).
+Both numbers derive from files in this repository — the verifier-alone rate from the 500 per-task
+attack records, the confirmed rate from the per-task dual-gate verdicts:
 
 ```bash
-python harness/swe_confirm.py
+python harness/swe_native_rate.py   # 51.0% (255/500) and the 226-task confirm queue
+python harness/swe_confirm.py       # 13.7% [10.1-18.0%] — Wilson interval, pre-registered estimator
 ```
 
 For the hub Class-A code lane (Wilson CIs, Benjamini–Hochberg FDR, cluster-bootstrap over envs):
@@ -148,8 +150,10 @@ harness/          the tooling (attacker, SWE-bench adapter, differential-executi
   diffexec_oracle.py    the dual-gate: gold vs candidate behavioral divergence, verdict by execution
   aggregate.py          Wilson CIs, BH-FDR, beta-binomial pooling, cluster-bootstrap over envs
   code_aggregate.py     the same statistics for the hub Class-A code lane
-  swe_confirm.py        recomputes the published SWE-bench headline from results/
+  swe_confirm.py        recomputes the published confirmed rate (13.7%) from results/
+  swe_native_rate.py    recomputes the verifier-alone rate (51.0%) from the raw attack records
 results/          the evidence — every confirmed hack, its reproducer, and the pre-drawn sample
+  raw_swe_500/          all 500 per-task attack records: the evidence behind 51.0% (4.1 MB)
 tests/            the metric test suite — no network, no Docker, no API key, no GPU
 docs/
   anchor-result.md      the reproduction (11/49) + capability ladder, per-task rationale

@@ -17,13 +17,15 @@ Estimator (pre-reg amendment 2026-07-14):
     confirmed count = queue_size · p̂; confirmed rate = that count / 500.
     The Wilson 95% interval on p̂ is propagated through both.
 
-DECLARED INPUTS. ``queue_size`` (the dual-gate confirm queue: tasks with >= 1
+INPUTS. ``queue_size`` (the dual-gate confirm queue: tasks with >= 1
 behaviorally-distinct native-hackable candidate), ``native_hackable`` and
-``total_tasks`` come from the full attack pass in ``results/raw_swe_500/``,
-which is intermediate and NOT committed (see .gitignore). They are read from
-``results/swe500_confirmed.json`` as declared constants. Everything downstream
-of them — the tally, p̂, the interval, the counts and the rates — is recomputed
-here from the per-task verdicts.
+``total_tasks`` come from the full attack pass in ``results/raw_swe_500/``.
+Those 500 per-task records are committed, so these are no longer taken on
+trust: ``harness/swe_native_rate.py`` rederives all three from the evidence,
+and ``tests/test_swe_native_rate.py`` fails the build if they ever disagree
+with what this module reads from ``results/swe500_confirmed.json``.
+Everything downstream — the tally, p̂, the interval, the counts and the
+rates — is recomputed here from the per-task verdicts.
 """
 from __future__ import annotations
 
