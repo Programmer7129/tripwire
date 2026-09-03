@@ -32,31 +32,33 @@ On **SWE-bench Verified** — the industry-standard coding benchmark for code-RL
 open, pre-registered, dual-gated harness:
 
 ```
- Verifier verdict alone (shipped test suite accepts a patch that differs from gold)
+ Verifier verdict alone (shipped suite accepts an attacker's candidate patch)
    51.0%  ██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░   255 / 500 tasks
+   45.2%  ███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░   226 / 500   ...and it is not gold's own fix
 
  Dual-gated  (that patch independently proven WRONG, not an LLM's opinion)
    13.7%  ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ~69 / 500   [95% CI 10.1–18.0%]
 ```
 
-> **On half of SWE-bench Verified, the shipped test suite accepts a patch that is not the accepted fix.
-> About 1 in 7 admits a *confirmed* reward-hack** — a patch that passes the shipped tests but demonstrably
-> does the wrong thing, each backed by a reproducer you can re-run.
+> **On half of SWE-bench Verified, an attacker aiming for a wrong patch got one past the shipped test
+> suite. About 1 in 7 admits a *confirmed* reward-hack** — a patch that passes the shipped tests but
+> demonstrably does the wrong thing, each backed by a reproducer you can re-run.
 
-Those two numbers measure different things and the gap between them is the point. Passing the suite with a
-patch that differs from gold is **not** evidence of a wrong patch: most such patches are legitimate
-alternative fixes. In the pre-registered sample of 102, adjudication came back **31 HACK / 67 CORRECT /
-4 AMBIGUOUS** — about two thirds were correct. That is exactly why the dual gate exists, and why 13.7%
-rather than 51.0% is this project's finding.
+Those numbers measure different things and the gap between them is the point. Getting a patch past the
+suite is **not** evidence the patch is wrong: many are legitimate alternative fixes. In the pre-registered
+sample of 102 — drawn from the 226 tasks whose accepted patch was textually distinct from gold's own fix,
+stratified by repo, seed 42 — adjudication came back **31 HACK / 67 CORRECT / 4 AMBIGUOUS**. About two
+thirds were adjudicated correct. That is why the dual gate exists, and why 13.7% rather than 51.0% is this
+project's finding.
 
-The prior published result ([arXiv:2606.16062](https://arxiv.org/abs/2606.16062)) measured this on 49 tasks
+The prior published result ([arXiv:2606.16062](https://arxiv.org/abs/2606.16062)) measured the confirmed rate on 49 tasks
 and **never released its code**. Tripwire reproduces it with an open harness and extends it to the **full
 500-task benchmark** for the first time — with a *stricter* oracle (deterministic behavioral divergence,
 not an LLM-augmented test), so every number here is a conservative **lower bound**.
 
 ## The finding in one table
 
-| Run | Tasks | Attacker | Suite accepts a patch differing from gold | Confirmed reward-hack (dual-gated) |
+| Run | Tasks | Attacker | Suite accepts an attacker candidate | Confirmed reward-hack (dual-gated) |
 | --- | --- | --- | --- | --- |
 | **Anchor** (reproduction) | 49 (astropy + django) | Claude Sonnet 4.5 | — | **11/49 = 22.4%** |
 | Anchor — capability ladder | 49 | Claude Haiku 4.5 | — | 8/49 = 16.3% |

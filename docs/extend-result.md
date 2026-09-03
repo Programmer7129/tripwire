@@ -53,7 +53,7 @@ stronger test suites where the confirmed hack rate is far lower, dragging the be
 from the hackable-heavy astropy/django slice the anchor and the paper used. Every number is a **lower
 bound**: Wilson lower edge, AMBIGUOUS excluded, and the dual-gate requires a *demonstrated* behavioral
 divergence. Even so, **~1 in 7 SWE-bench-Verified tasks admits a confirmed wrong patch that the shipped
-verifier accepts**, and on *half* the verifier accepts a patch that differs from gold — on the exact
+verifier accepts**, and on *half* the verifier accepts an attacker's candidate patch at all — on the exact
 benchmark the field treats as gold-standard for code-RL reward.
 
 Artifacts: `results/swe500_confirmed.json` (aggregate), `results/swe500_sample_verdicts.json` (per-task
