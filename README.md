@@ -32,16 +32,22 @@ On **SWE-bench Verified** — the industry-standard coding benchmark for code-RL
 open, pre-registered, dual-gated harness:
 
 ```
- Verifier verdict alone (does the shipped test suite accept a wrong patch?)
+ Verifier verdict alone (shipped test suite accepts a patch that differs from gold)
    51.0%  ██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░   255 / 500 tasks
 
- Dual-gated  (patch independently proven wrong, not an LLM's opinion)
+ Dual-gated  (that patch independently proven WRONG, not an LLM's opinion)
    13.7%  ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ~69 / 500   [95% CI 10.1–18.0%]
 ```
 
-> **Half of SWE-bench Verified has a verifier that accepts a wrong patch. About 1 in 7 admits a *confirmed*
-> reward-hack** — a patch that passes the shipped tests but demonstrably does the wrong thing, each backed
-> by a reproducer you can re-run.
+> **On half of SWE-bench Verified, the shipped test suite accepts a patch that is not the accepted fix.
+> About 1 in 7 admits a *confirmed* reward-hack** — a patch that passes the shipped tests but demonstrably
+> does the wrong thing, each backed by a reproducer you can re-run.
+
+Those two numbers measure different things and the gap between them is the point. Passing the suite with a
+patch that differs from gold is **not** evidence of a wrong patch: most such patches are legitimate
+alternative fixes. In the pre-registered sample of 102, adjudication came back **31 HACK / 67 CORRECT /
+4 AMBIGUOUS** — about two thirds were correct. That is exactly why the dual gate exists, and why 13.7%
+rather than 51.0% is this project's finding.
 
 The prior published result ([arXiv:2606.16062](https://arxiv.org/abs/2606.16062)) measured this on 49 tasks
 and **never released its code**. Tripwire reproduces it with an open harness and extends it to the **full
@@ -50,7 +56,7 @@ not an LLM-augmented test), so every number here is a conservative **lower bound
 
 ## The finding in one table
 
-| Run | Tasks | Attacker | Verifier accepts wrong patch | Confirmed reward-hack (dual-gated) |
+| Run | Tasks | Attacker | Suite accepts a patch differing from gold | Confirmed reward-hack (dual-gated) |
 | --- | --- | --- | --- | --- |
 | **Anchor** (reproduction) | 49 (astropy + django) | Claude Sonnet 4.5 | — | **11/49 = 22.4%** |
 | Anchor — capability ladder | 49 | Claude Haiku 4.5 | — | 8/49 = 16.3% |
