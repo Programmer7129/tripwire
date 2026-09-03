@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Results: reproducible](https://img.shields.io/badge/results-reproducible-brightgreen.svg)](#-reproduce-it-yourself)
-[![Compute: ~$15](https://img.shields.io/badge/compute-~%2415-success.svg)](#cost)
+[![Compute: $29.98](https://img.shields.io/badge/compute-%2429.98-success.svg)](#cost)
 [![Reproduces arXiv:2606.16062](https://img.shields.io/badge/reproduces-arXiv%3A2606.16062-b31b1b.svg)](https://arxiv.org/abs/2606.16062)
 [![Oracle: differential execution](https://img.shields.io/badge/oracle-differential%20execution-8A2BE2.svg)](#how-it-works)
 
@@ -183,7 +183,12 @@ Conservative science is a credibility asset, so these are stated up front (full 
 - An earlier full-500 pass was **discarded** after a Docker disk-exhaustion bug silently produced empty
   patches; caught, fixed, and re-run clean. The before/after is documented as part of the record.
 
-<a name="cost"></a>Total compute: **~$15** of cloud credits. Every result is re-runnable from this repo.
+<a name="cost"></a>**Total attacker spend: $29.98**, summed from the `cost_usd` field of every attack
+record, across the anchor run, a discarded v1, the full 500, the Haiku capability rung, and the
+retest/diagnostic passes. The full-500 pass alone is $21.60 and its records are committed, so this
+figure is checkable rather than asserted. (An earlier revision of this README said `~$15`; that was
+the anchor-scale estimate and it understated the total. Corrected here.) Docker and CPU time are
+local and not metered. Every result is re-runnable from this repo.
 
 ## Why this matters
 
