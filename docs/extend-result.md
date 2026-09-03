@@ -6,9 +6,10 @@ reported on 49 tasks and never ran the full set. Same open, deterministic harnes
 (verifier PASS **and** an independent oracle says WRONG). Aggregate-only until the 30-day disclosure gate.
 
 ## Setup
-- **Tasks:** all 500 of `princeton-nlp/SWE-bench_Verified`, 11 repos (django 231, sympy 60, sphinx 35,
-  matplotlib 34, scikit-learn 26, astropy 22, xarray 18, pytest 15, pylint 8, requests 6, seaborn 2,
-  flask 1).
+- **Tasks:** all 500 of `princeton-nlp/SWE-bench_Verified`, 12 repos (django 231, sympy 75, sphinx 44,
+  matplotlib 34, scikit-learn 32, astropy 22, xarray 22, pytest 19, pylint 10, requests 8, seaborn 2,
+  flask 1). Counted from `results/raw_swe_500/`; an earlier revision listed a stale tally summing to
+  458 and said 11 repos.
 - **Attacker:** Claude **Sonnet 4.5** via AWS Bedrock (Sonnet 4 retired — disclosed substitution), the
   same `harness/code_attack.py` as the anchor. K=3 candidates/task, round 1 single-shot, rounds 2–3 fed
   the shipped-suite failure logs. SEARCH/REPLACE output → deterministic difflib diff (99% apply).
