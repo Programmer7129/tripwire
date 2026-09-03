@@ -50,7 +50,9 @@ def derive(records: list[dict]) -> dict:
     total = len(records)
     native = 0
     queue = 0
+    cost = 0.0
     for r in records:
+        cost += r.get("cost_usd") or 0.0
         cands = r.get("candidates") or []
         resolved = [c for c in cands if c.get("native_resolved")]
         if resolved:
@@ -63,6 +65,7 @@ def derive(records: list[dict]) -> dict:
         "native_rate": (native / total) if total else 0.0,
         "queue_size": queue,
         "queue_rate": (queue / total) if total else 0.0,
+        "total_cost_usd": round(cost, 2),
     }
 
 
@@ -81,6 +84,7 @@ def main(argv: list[str] | None = None) -> int:
           f"  = {d['native_rate']:.1%}")
     print(f"dual-gate confirm queue              {d['queue_size']}"
           f"  = {d['queue_rate']:.1%}   (behaviorally distinct from gold)")
+    print(f"attacker spend on this pass          ${d['total_cost_usd']:.2f}")
     return 0
 
 

@@ -16,3 +16,37 @@ should filter on the canary string above.
 
 Every finding here concerns public benchmark tasks (SWE-bench Verified) and their test
 suites — not any individual author's private work.
+
+Third-party source in results/raw_swe_500/
+------------------------------------------
+
+The attack records under results/raw_swe_500/ contain unified diffs against SWE-bench
+Verified tasks. Those diffs quote source from the upstream projects the tasks are drawn
+from, as context and removed lines. That quoted source remains the copyright of its
+respective authors and is used under its own licence, NOT under this repository's MIT
+licence. The MIT licence in LICENSE covers Tripwire's own code, metrics and metadata.
+
+Upstream projects quoted, by task count, with their licences:
+
+    231  django/django                BSD-3-Clause
+     75  sympy/sympy                  BSD-3-Clause
+     44  sphinx-doc/sphinx            BSD-2-Clause
+     34  matplotlib/matplotlib        matplotlib licence (BSD-compatible)
+     32  scikit-learn/scikit-learn    BSD-3-Clause
+     22  astropy/astropy              BSD-3-Clause
+     22  pydata/xarray                Apache-2.0
+     19  pytest-dev/pytest            MIT
+     10  pylint-dev/pylint            GPL-2.0-or-later
+      8  psf/requests                 Apache-2.0
+      2  mwaskom/seaborn              BSD-3-Clause
+      1  pallets/flask                BSD-3-Clause
+
+The pylint fragments are called out explicitly because pylint is copyleft while this
+repository is not. What appears here is diff context around edits of a few lines each;
+no pylint file is reproduced whole and nothing here is runnable as pylint. It is quotation
+in a research artifact, not redistribution of the program. If the pylint maintainers
+disagree, contact the author and those ten records will be removed.
+
+This follows the practice of SWE-bench's own experiments repository, which publishes
+per-instance patches, trajectories and execution logs against these same projects.
+

@@ -183,12 +183,13 @@ Conservative science is a credibility asset, so these are stated up front (full 
 - An earlier full-500 pass was **discarded** after a Docker disk-exhaustion bug silently produced empty
   patches; caught, fixed, and re-run clean. The before/after is documented as part of the record.
 
-<a name="cost"></a>**Total attacker spend: $29.98**, summed from the `cost_usd` field of every attack
-record, across the anchor run, a discarded v1, the full 500, the Haiku capability rung, and the
-retest/diagnostic passes. The full-500 pass alone is $21.60 and its records are committed, so this
-figure is checkable rather than asserted. (An earlier revision of this README said `~$15`; that was
-the anchor-scale estimate and it understated the total. Corrected here.) Docker and CPU time are
-local and not metered. Every result is re-runnable from this repo.
+<a name="cost"></a>**Total attacker spend: $29.98**, summed from the `cost_usd` field of every
+attack record. **$21.60 of that is checkable from this repository** — the full-500 pass, whose 500
+records are committed and whose total is pinned by `pytest`. The remaining **$8.38 is not
+independently checkable here**: the anchor run ($2.53), the discarded v1 ($2.64), the Haiku
+capability rung ($2.58) and the retest and diagnostic passes ($0.63), whose raw records stay out of
+the repo as superseded intermediates. Docker and CPU time are local and unmetered. (An earlier
+revision said `~$15`; that was the anchor-scale estimate and it understated the total.)
 
 ## Why this matters
 

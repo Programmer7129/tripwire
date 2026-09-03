@@ -9,13 +9,9 @@ __pycache__/
 # Intermediate raw attacker records from exploratory runs (large, superseded).
 # NOTE: results/raw_swe_500/ is deliberately NOT ignored -- it is the committed
 # evidence for the published 51.0% native-hackable rate. See harness/swe_native_rate.py.
+results/raw_swe_*/
 results/raw_swe/
-results/raw_swe_v1/
-results/raw_swe_haiku/
-results/raw_swe_retest/
-results/raw_swe_hardtest/
-results/raw_swe_500_diffexec/
-results/raw_swe_anthropic_diag/
+!results/raw_swe_500/
 scratch_swe/
 scratch_logs/
 third_party/

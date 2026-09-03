@@ -1,4 +1,4 @@
-# envcert — pre-registration
+# Tripwire — pre-registration
 
 **Committed before any aggregate is computed.** The git commit timestamp of this file is the
 pre-registration record. Thresholds, verifier-type routing, metrics, statistics, model slate, and

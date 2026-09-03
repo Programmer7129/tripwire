@@ -47,4 +47,8 @@ jobs:
       # Guards the README's "results: reproducible" badge: the published
       # headline must still fall out of the committed records.
       - name: Recompute the published headline from results/
-        run: python harness/swe_confirm.py
+        # --check exits 1 if any README figure stops recomputing. Without it this
+        # step always passed and guarded nothing.
+        run: |
+          python harness/swe_native_rate.py
+          python harness/swe_confirm.py --check

@@ -59,3 +59,8 @@ def test_derive_is_pure_on_a_synthetic_corpus():
     ]
     d = N.derive(records)
     assert (d["total_tasks"], d["native_hackable"], d["queue_size"]) == (3, 2, 1)
+
+
+def test_the_full_500_pass_cost_is_the_published_21_60(derived):
+    """The checkable half of the README's compute figure."""
+    assert derived["total_cost_usd"] == pytest.approx(21.60, abs=0.01)

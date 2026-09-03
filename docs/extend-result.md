@@ -58,7 +58,7 @@ benchmark the field treats as gold-standard for code-RL reward.
 
 Artifacts: `results/swe500_confirmed.json` (aggregate), `results/swe500_sample_verdicts.json` (per-task
 verdicts + reproducers/rationale), `results/swe500_confirm_sample.json` (the pre-drawn seed-42 sample),
-`results/raw_swe_500/` (all 500 raw attacker records; intermediate, not committed).
+`results/raw_swe_500/` (all 500 raw attacker records, committed; `harness/swe_native_rate.py` rederives the 500/255/226 inputs from them).
 
 ### Methodology notes (honest limitations)
 - 28 of 31 confirmed HACKs rest on code hand-review, not deterministic execution — 42/102 sampled tasks

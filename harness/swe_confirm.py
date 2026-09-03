@@ -175,15 +175,66 @@ def anchor_records(results_dir=RESULTS, eligible_tasks=49):
     }
 
 
+# The figures as published in README.md. `--check` fails if results/ stops
+# producing them, so the reproducibility claim is enforced rather than asserted.
+PUBLISHED = {
+    "total_tasks": 500,
+    "native_hackable": 255,
+    "queue_size": 226,
+    "sample_n": 102,
+    "sample_HACK": 31,
+    "sample_CORRECT": 67,
+    "sample_AMBIGUOUS": 4,
+}
+PUBLISHED_RATES = {
+    "native_rate": (0.510, 5e-4),
+    "p_hat": (0.3039, 5e-5),
+    "confirmed_rate": (0.137, 5e-4),
+}
+PUBLISHED_CI = ("confirmed_rate_ci", (0.101, 0.180), 5e-4)
+
+
+def check_against_published(record: dict) -> list[str]:
+    """Every README figure, recomputed. Returns one line per drifted figure."""
+    out = []
+    for key, want in PUBLISHED.items():
+        got = record.get(key)
+        if got != want:
+            out.append(f"{key}: published {want}, recomputed {got}")
+    for key, (want, tol) in PUBLISHED_RATES.items():
+        got = record.get(key)
+        if got is None or abs(got - want) > tol:
+            out.append(f"{key}: published {want}, recomputed {got}")
+    key, (lo, hi), tol = PUBLISHED_CI
+    got = record.get(key)
+    if not got or abs(got[0] - lo) > tol or abs(got[1] - hi) > tol:
+        out.append(f"{key}: published [{lo}, {hi}], recomputed {got}")
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description="Recompute the SWE-bench headline from results/.")
     ap.add_argument("--results-dir", default=RESULTS)
     ap.add_argument("--json", action="store_true", help="print the record as JSON")
+    ap.add_argument("--check", action="store_true",
+                    help="exit 1 if the recomputed headline has drifted from PUBLISHED")
     args = ap.parse_args(argv)
 
     record = build_record(args.results_dir)
     anchors = anchor_records(args.results_dir)
+
+    if args.check:
+        drift = check_against_published(record)
+        for line in drift:
+            print("DRIFT: " + line, file=sys.stderr)
+        if drift:
+            print("\n%d published figure(s) no longer match results/." % len(drift),
+                  file=sys.stderr)
+            return 1
+        print("OK: every published SWE-bench figure recomputes from results/ "
+              "(%d checked)." % len(PUBLISHED))
+        return 0
     if args.json:
         print(json.dumps({"extend_500": record, "anchor": anchors}, indent=2))
         return 0

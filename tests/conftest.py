@@ -1,4 +1,4 @@
-"""Test configuration for the Tripwire (envcert) harness.
+"""Test configuration for the Tripwire harness.
 
 The harness modules use flat, sibling imports (``import aggregate``), so
 ``harness/`` goes on ``sys.path``. ``REPO`` and ``RESULTS`` locate the committed

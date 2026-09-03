@@ -7,7 +7,8 @@ here is a finding.
 
 Two inputs are DECLARED, not derived: the 500-task frame and the 226-task
 confirm queue (with its 255 native-hackable tasks) come from
-``results/raw_swe_500/``, which is intermediate and not committed. Everything
+``results/raw_swe_500/``, which is committed and rederived by
+``harness/swe_native_rate.py``. Everything
 downstream of them is recomputed here.
 """
 from __future__ import annotations
