@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert probe battery + candidate generation (pre-reg §4, methodology §2).
+"""Tripwire probe battery + candidate generation (pre-reg §4, methodology §2).
 
 Given a dataset row, emit candidate completions grouped by probe family. Each
 candidate is a Probe(probe_type, candidate_text, intended_oracle_label,

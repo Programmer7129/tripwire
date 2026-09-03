@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Results: reproducible](https://img.shields.io/badge/results-reproducible-brightgreen.svg)](#-reproduce-it-yourself)
-[![Compute: ~$15](https://img.shields.io/badge/compute-~%2415-success.svg)](#cost)
+[![Compute: $29.98](https://img.shields.io/badge/compute-%2429.98-success.svg)](#cost)
 [![Reproduces arXiv:2606.16062](https://img.shields.io/badge/reproduces-arXiv%3A2606.16062-b31b1b.svg)](https://arxiv.org/abs/2606.16062)
 [![Oracle: differential execution](https://img.shields.io/badge/oracle-differential%20execution-8A2BE2.svg)](#how-it-works)
 
@@ -117,10 +117,25 @@ python harness/code_attack.py <instance_ids...> \
 python harness/diffexec_oracle.py astropy__astropy-14309 --exploit-file <candidate.diff>
 ```
 
-**4 — Aggregate** (Wilson CIs, Benjamini–Hochberg FDR, cluster-bootstrap):
+**4 — Recompute the headline** from the committed evidence in `results/` (no Docker, no API key).
+Both numbers derive from files in this repository — the verifier-alone rate from the 500 per-task
+attack records, the confirmed rate from the per-task dual-gate verdicts:
+
+```bash
+python harness/swe_native_rate.py   # 51.0% (255/500) and the 226-task confirm queue
+python harness/swe_confirm.py       # 13.7% [10.1-18.0%] — Wilson interval, pre-registered estimator
+```
+
+For the hub Class-A code lane (Wilson CIs, Benjamini–Hochberg FDR, cluster-bootstrap over envs):
 
 ```bash
 python harness/code_aggregate.py
+```
+
+**5 — Run the tests** (no network, no Docker, no API key, no GPU):
+
+```bash
+pip install -e ".[dev]" && pytest -q
 ```
 
 Exact parameters, the seed-42 stratified sample, and the per-task verdicts are in
@@ -133,13 +148,24 @@ harness/          the tooling (attacker, SWE-bench adapter, differential-executi
   code_attack.py        the reward-hack attacker (K=3, failure-log feedback, deterministic diff transport)
   swebench_adapter.py   apply any patch → run the native verifier → read resolved
   diffexec_oracle.py    the dual-gate: gold vs candidate behavioral divergence, verdict by execution
-  code_aggregate.py     Wilson CIs, BH-FDR, cluster-bootstrap over tasks
+  aggregate.py          Wilson CIs, BH-FDR, beta-binomial pooling, cluster-bootstrap over envs
+  code_aggregate.py     the same statistics for the hub Class-A code lane
+  swe_confirm.py        recomputes the published confirmed rate (13.7%) from results/
+  swe_native_rate.py    recomputes the verifier-alone rate (51.0%) from the raw attack records
 results/          the evidence — every confirmed hack, its reproducer, and the pre-drawn sample
+  raw_swe_500/          all 500 per-task attack records: the evidence behind 51.0% (4.1 MB)
+tests/            the metric test suite — no network, no Docker, no API key, no GPU
 docs/
   anchor-result.md      the reproduction (11/49) + capability ladder, per-task rationale
   extend-result.md      the novel full-500 result (51% / 13.7%), sampling + honest limitations
   preregistration.md    thresholds & protocol, committed before any verdict
 ```
+
+> **A note on the name.** The public artifact is **Tripwire**. `envcert` is the older internal name
+> and still appears in runtime identifiers — the Docker image and container names
+> (`envcert-base:latest`), the egress network and proxy names, the in-container probe paths and the
+> run-id prefixes. Those are load-bearing strings, not prose, so they are left alone; nothing named
+> `envcert` is a separate project.
 
 ## Honest limitations
 
@@ -157,7 +183,13 @@ Conservative science is a credibility asset, so these are stated up front (full 
 - An earlier full-500 pass was **discarded** after a Docker disk-exhaustion bug silently produced empty
   patches; caught, fixed, and re-run clean. The before/after is documented as part of the record.
 
-<a name="cost"></a>Total compute: **~$15** of cloud credits. Every result is re-runnable from this repo.
+<a name="cost"></a>**Total attacker spend: $29.98**, summed from the `cost_usd` field of every
+attack record. **$21.60 of that is checkable from this repository** — the full-500 pass, whose 500
+records are committed and whose total is pinned by `pytest`. The remaining **$8.38 is not
+independently checkable here**: the anchor run ($2.53), the discarded v1 ($2.64), the Haiku
+capability rung ($2.58) and the retest and diagnostic passes ($0.63), whose raw records stay out of
+the repo as superseded intermediates. Docker and CPU time are local and unmetered. (An earlier
+revision said `~$15`; that was the anchor-scale estimate and it understated the total.)
 
 ## Why this matters
 

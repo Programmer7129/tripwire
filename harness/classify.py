@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert verifier-type classifier (pre-reg §1).
+"""Tripwire verifier-type classifier (pre-reg §1).
 
 Runs INSIDE the disposable container (needs a loaded `env`). Introspects the
 env's rubric + env class into exactly one bucket:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert Phase 2 aggregate statistics.
+"""Tripwire Phase 2 aggregate statistics.
 
 Reads a directory of ``*.battery.jsonl`` files (one per env, one JSON record per
 (row, probe) plus a single ``mode=="classification"`` summary line) and computes
@@ -303,7 +303,22 @@ def _read_battery(path):
 
 
 def compute_env(path, index):
+    """Read one battery file and compute its metrics. I/O only; the metric
+    computation lives in compute_env_from_records, which is pure and testable."""
     summary, records = _read_battery(path)
+    env_id_fallback = os.path.basename(path).replace(
+        ".battery.jsonl", "").replace("__", "/", 1)
+    return compute_env_from_records(summary, records, index,
+                                    env_id_fallback=env_id_fallback)
+
+
+def compute_env_from_records(summary, records, index, env_id_fallback=None):
+    """Per-env metrics from already-parsed records (pure: no file access).
+
+    `summary` is the mode=="classification" line (or None); `records` are the
+    per-(row, probe) lines; `index` maps env_id -> {tags, domain}.
+    """
+    index = index or {}
     # Skip error records (spec: "Records may carry an error field (skip those).")
     scored = [r for r in records if "error" not in r]
     n_error = len(records) - len(scored)
@@ -314,7 +329,7 @@ def compute_env(path, index):
     if not env_id and scored:
         env_id = scored[0].get("env_id")
     if not env_id:
-        env_id = os.path.basename(path).replace(".battery.jsonl", "").replace("__", "/", 1)
+        env_id = env_id_fallback or "unknown"
 
     # verifier_type: prefer the classification summary line (authoritative).
     vtype = None
@@ -701,7 +716,7 @@ def print_summary(result):
     bf = result["binary_far"]
     soft = result["soft"]
     print("=" * 72)
-    print("envcert aggregate  (pre-reg §5: Wilson-LB > {:.0%}, BH-FDR q={})".format(
+    print("Tripwire aggregate  (pre-reg §5: Wilson-LB > {:.0%}, BH-FDR q={})".format(
         FAR_THRESHOLD, FDR_Q))
     print("=" * 72)
     print("\nCOVERAGE  (total env files: {})".format(cov["total_env_files"]))
@@ -804,7 +819,7 @@ def pool_eyr(raw_dir):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="envcert Phase 2 aggregate statistics")
+    ap = argparse.ArgumentParser(description="Tripwire Phase 2 aggregate statistics")
     ap.add_argument("--raw", default="results/raw",
                     help="directory of *.battery.jsonl files")
     ap.add_argument("--index", default="results/hub_index.jsonl",
@@ -823,7 +838,7 @@ def main(argv=None):
         with open(out, "w") as fh:
             json.dump(pooled, fh, indent=2, default=str)
         print("=" * 72)
-        print("envcert ELICITED / EYR aggregate (pilot; pre-reg §2 — NOT headlined <150 envs)")
+        print("Tripwire ELICITED / EYR aggregate (pilot; pre-reg §2 — NOT headlined <150 envs)")
         print("=" * 72)
         print(f"  envs: {pooled['n_envs']}   "
               f"EYR-positive (strict, reached anchor + oracle WRONG): "

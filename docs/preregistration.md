@@ -1,4 +1,4 @@
-# envcert — pre-registration
+# Tripwire — pre-registration
 
 **Committed before any aggregate is computed.** The git commit timestamp of this file is the
 pre-registration record. Thresholds, verifier-type routing, metrics, statistics, model slate, and
@@ -188,3 +188,38 @@ propagated to the rate over 500. Reported ALONGSIDE the native-hackable rate (V=
 looser metric) — never in place of it. The sample is drawn before any hand-review verdict is read. Naming
 any individual broken task publicly still requires full (non-sampled) review of that task, per the
 disclosure gate.
+
+**2026-09-02 — Provenance of the pre-registration timestamp for the published runs.**
+Registered as a correction to the header claim, not to any method or number.
+
+The header of this file states that "the git commit timestamp of this file is the pre-registration
+record." **For the runs published so far that claim is not independently verifiable.** The public
+repository was opened with a **single squashed commit** (`95be36b`, 2026-07-26) that contains this
+pre-registration AND the anchor, ladder and 500-extend results together. One commit carries one
+timestamp, so git cannot demonstrate that this file predates the verdicts it governs. Nothing about
+the protocol changes; what changes is the strength of the evidence for its ordering, and that is
+stated here rather than left for a reader to discover.
+
+**What IS verifiable from the repository, independent of commit order:**
+- **The sample was fixed before the verdicts.** The seed-42 stratified draw is a separate artifact
+  (`results/swe500_confirm_sample.json`) holding the seed, the queue size, and the 102 drawn ids. Its
+  per-repo composition is checkable against the declared proportional strata, and it is disjoint from
+  the verdict file, so a reader can see the frame without trusting the tally.
+- **Every counted verdict carries its own evidence.** Each confirmed hack ships either a
+  divergent-input reproducer from deterministic differential execution or a written hand-review
+  rationale; each CORRECT and AMBIGUOUS verdict ships one too. A reader re-derives the tally, p̂, the
+  Wilson interval and the published rate from `results/` with `python harness/swe_confirm.py`.
+- **The thresholds are code, not prose.** §5's 5% bar, the q=0.05 FDR level, the Wilson quantile and
+  the bootstrap seed are named constants in `harness/aggregate.py` carrying their §-citations, so any
+  deviation from the registered values appears as a diff.
+- **Every registered bias points down.** Wilson lower bound rather than point estimate; AMBIGUOUS
+  excluded from the numerator and kept in the denominator; soft graders excluded from binary FAR;
+  ambiguous probes excluded from FAR. The looser readings are disclosed alongside (native-hackable
+  51.0%; AMBIGUOUS-as-hack 15.5%). A choice made after seeing results to flatter the headline would
+  have had to move the number **up**, and each such choice is on the record moving it down.
+
+**Going forward, from this amendment onward:** each phase's pre-registration lands as **its own
+commit, pushed before any record of that phase's results exists in the repository**, and the
+result document for that phase cites the pre-registration commit hash. Publication does not squash
+history. Where a phase's registration is added to this file, it is added as a dated amendment below,
+in its own commit, ahead of the corresponding run — never in the same commit as the run's output.

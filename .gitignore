@@ -6,9 +6,15 @@ __pycache__/
 *.pyc
 .DS_Store
 
-# Intermediate raw attacker records (large; the committed results/ hold the evidence + reproducers)
-results/raw_swe/
+# Intermediate raw attacker records from exploratory runs (large, superseded).
+# NOTE: results/raw_swe_500/ is deliberately NOT ignored -- it is the committed
+# evidence for the published 51.0% native-hackable rate. See harness/swe_native_rate.py.
 results/raw_swe_*/
+results/raw_swe/
+!results/raw_swe_500/
 scratch_swe/
 scratch_logs/
 third_party/
+
+# local test virtualenv
+.venv*/

@@ -1,3 +1,9 @@
+# Everything here is also declared in pyproject.toml as an extra:
+#   pip install -e ".[swe,anthropic]"    # or .[swe,bedrock]
+#   pip install -e ".[dev]"              # pytest + ruff, no Docker or API key
+# Aggregation, oracle and classification are standard-library only, so the
+# metrics can be recomputed with none of this installed.
+
 # Core
 swebench>=3.0.0          # native SWE-bench verifier (run_evaluation, grading) + Docker harness
 datasets>=2.19.0         # loads princeton-nlp/SWE-bench_Verified

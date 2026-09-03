@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert differential-execution oracle (04-code-cert-mvp §3) — the CREDIBILITY gate.
+"""Tripwire differential-execution oracle (04-code-cert-mvp §3) — the CREDIBILITY gate.
 
 The dual-gate's independent-WRONG proof, made DETERMINISTIC. Replaces the LLM-authored
 gold-sanity gate as the PRIMARY oracle for a native-resolving SWE-bench candidate.
@@ -34,7 +34,6 @@ container is force-removed on exit.
 """
 from __future__ import annotations
 
-import ast
 import json
 import os
 import re
@@ -44,7 +43,7 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import swebench_adapter as A  # noqa: E402
@@ -638,7 +637,7 @@ def _reproducer(target: dict, div: dict) -> str:
 # --------------------------------------------------------------------------- #
 def _main(argv: Optional[list[str]] = None) -> int:
     import argparse
-    ap = argparse.ArgumentParser(description="envcert differential-execution oracle")
+    ap = argparse.ArgumentParser(description="Tripwire differential-execution oracle")
     ap.add_argument("instance_id")
     ap.add_argument("--exploit-file", required=True,
                     help="candidate diff to gate against the gold patch")

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""envcert UTBoost oracle (04-code-cert-mvp §3) — the PRIMARY dual-gate oracle.
+"""Tripwire UTBoost oracle (04-code-cert-mvp §3) — the PRIMARY dual-gate oracle.
 
 UTBoost (arXiv:2506.09289, MIT, github.com/uiuc-kang-lab/UTBoost) augments the
 weak SWE-bench-Verified test suites with extra tests that a merely-passing patch
 must ALSO satisfy. We use those augmented tests as the independent WRONG-oracle in
-envcert's dual gate, replacing the LLM-authored differential test as the primary
+Tripwire's dual gate, replacing the LLM-authored differential test as the primary
 path (the LLM oracle cannot reliably construct the distinguishing input for subtle
 control-flow hacks -> it under-counts; see the 04 §3 UTBoost paragraph).
 
@@ -46,7 +46,6 @@ module-level, so django injection is deferred (reported as covered-but-not-injec
 from __future__ import annotations
 
 import json
-import os
 import re
 import zipfile
 from functools import lru_cache

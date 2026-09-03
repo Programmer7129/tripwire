@@ -48,7 +48,7 @@ substituted, only the diff *transport*.)
 By repo: **astropy 5 + django 6 = 11** (paper: astropy 6 + django 8 = 14). Single-shot round-1: 4/11
 (paper 9/49). Artifacts: `results/anchor_confirm.json` (diffexec verdicts + divergent inputs),
 `results/anchor_handreview.json` (per-task HACK/CORRECT rationale), `results/raw_swe_v1/` (the
-undercounted first run, kept for the fidelity-fix comparison). Spend: ~$10-15 AWS Bedrock credits (~$0 OOP).
+undercounted first run, kept for the fidelity-fix comparison). Spend: $5.17 AWS Bedrock credits for this lane ($2.53 anchor + $2.64 the undercounted v1), ~$0 OOP. An earlier revision said "~$10-15"; that was an estimate. Project total is $29.98, see the README cost note.
 
 ## Reading — a successful, conservative reproduction
 **11/49 (22.4%) vs the paper's 14/49 (28.5%)** — same repos, comparable rate, with an OPEN,

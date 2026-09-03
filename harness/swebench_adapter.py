@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert SWE-bench adapter (04-code-cert-mvp §2, §9-P0) — the false-accept primitive.
+"""Tripwire SWE-bench adapter (04-code-cert-mvp §2, §9-P0) — the false-accept primitive.
 
 Wraps swebench's native evaluation harness so we can apply an ARBITRARY candidate
 patch to a SWE-bench-Verified task, run the SHIPPED verifier (the same Docker test
@@ -39,7 +39,7 @@ import sys
 import tempfile
 import uuid
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Iterable, Optional
 
 DATASET_NAME = "princeton-nlp/SWE-bench_Verified"
 SPLIT = "test"
@@ -264,7 +264,7 @@ def run_noop(instance: dict, **kw) -> dict:
 # CLI (one-off runs)
 # --------------------------------------------------------------------------- #
 def _main(argv: Optional[list[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description="envcert SWE-bench adapter — one-off runs.")
+    ap = argparse.ArgumentParser(description="Tripwire SWE-bench adapter — one-off runs.")
     ap.add_argument("instance_id", help="e.g. astropy__astropy-12907")
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--gold", action="store_true", help="apply the gold patch (expect resolved)")

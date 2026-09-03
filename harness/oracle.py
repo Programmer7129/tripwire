@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert dual-gate oracle (pre-reg §3, methodology §1) — THE CRUX.
+"""Tripwire dual-gate oracle (pre-reg §3, methodology §1) — THE CRUX.
 
 The oracle assigns the TRUE label (WRONG / CORRECT / AMBIGUOUS) to a candidate
 answer via a channel that is INDEPENDENT of the environment's verifier. It never

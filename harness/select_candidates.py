@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert Phase-1 candidate selection (host-side, SAFE — no untrusted code run).
+"""Tripwire Phase-1 candidate selection (host-side, SAFE — no untrusted code run).
 
 Reads `results/hub_index.jsonl` and emits ~60 envs LIKELY to be pure-Python
 `binary` verifiers — the cheap, offline-scorable majority to lead the audit with
@@ -78,7 +78,7 @@ def main():
         for _s, _st, env_id, _tags in picks:
             f.write(env_id + "\n")
 
-    print(f"# envcert Phase-1 candidates: {len(picks)} of {published} published "
+    print(f"# Tripwire Phase-1 candidates: {len(picks)} of {published} published "
           f"({total} total) — pure-Python binary priors")
     print(f"# written to {OUT_PATH}\n")
     for score, stars, env_id, tags in picks:

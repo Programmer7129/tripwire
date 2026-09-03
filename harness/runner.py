@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert host-side orchestrator — disposable-container lifecycle per env.
+"""Tripwire host-side orchestrator — disposable-container lifecycle per env.
 
 Guardrail (spec §4): community env wheels are untrusted (pip install + import =
 RCE). Every install + load_environment() + score_rollout() runs inside a
@@ -531,7 +531,7 @@ def _summarise_eyr(path):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="envcert disposable-container scoring runner")
+    ap = argparse.ArgumentParser(description="Tripwire disposable-container scoring runner")
     ap.add_argument("envs", nargs="+", help="owner/name[@version] ...")
     ap.add_argument("--rows", type=int, default=5, help="dataset rows to probe per env")
     ap.add_argument("--k", type=int, default=5, help="probe repeats (pre-reg §4)")

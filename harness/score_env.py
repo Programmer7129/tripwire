@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""envcert offline rubric-scoring probe — runs INSIDE the disposable container.
+"""Tripwire offline rubric-scoring probe — runs INSIDE the disposable container.
 
 Two phases (network is controlled by the host runner, not here):
   --prepare : network ON. import the env, call load_environment() once to warm
