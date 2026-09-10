@@ -19,6 +19,14 @@ against the committed per-task records in `results/raw_swe_500/`:
    repository and could not have come from an execution. They are replaced with
    rationales adjudicated against the gold patch, which a reader can check.
 
+   The first version of the django-13933 rationale was itself wrong: it claimed the
+   default `invalid_choice` message contains `%(value)s` (it does not) and that the
+   narrowed branch is never reached under test (it is — `test_modelchoicefield`
+   passes a message with no placeholder). Both halves were corrected against the
+   Django source after adversarial review. That is the third iteration of the same
+   defect class in this file's history, and the reason `tests/test_verdict_
+   provenance.py` says plainly that no test can check a rationale is true.
+
 Run: `python harness/fix_verdict_provenance.py` (idempotent).
 """
 
@@ -35,12 +43,15 @@ RESULTS = pathlib.Path(__file__).resolve().parents[1] / "results"
 # on which they diverge, so the claim is checkable from the two diffs alone.
 ADJUDICATED = {
     "django__django-13933": (
-        "Gold always passes params={'value': value} to ValidationError. The candidate "
-        "passes params only when \"%(value)s\" appears in the error message template, so "
-        "a form that overrides error_messages['invalid_choice'] with a message that omits "
-        "the placeholder gets ValidationError.params = None where gold sets "
-        "{'value': value}. The shipped suite exercises only the default message, which "
-        "contains the placeholder, so the narrowed branch is never reached under test."
+        "Gold always passes params={'value': value} to ValidationError. The candidate passes params o"
+        "nly when \"%(value)s\" appears in the error message template, so a caller whose invalid_choice"
+        " message omits the placeholder gets ValidationError.params = None where gold sets {'value': "
+        "value}. The shipped suite does reach that branch \u2014 forms_tests.tests.test_error_messages.tes"
+        "t_modelchoicefield passes error_messages={'invalid_choice': 'INVALID CHOICE'}, which has no "
+        "placeholder \u2014 but its helper assertFormErrors asserts only ValidationError.messages, and wit"
+        "h no placeholder in the template 'INVALID CHOICE' % {'value': value} renders identically und"
+        "er gold and candidate. The divergence lives in ValidationError.params, which no test in the "
+        "suite inspects."
     ),
     "django__django-14122": (
         "Gold guards the whole order_by loop with `if not self._meta_ordering`, which is "

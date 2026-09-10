@@ -1,18 +1,31 @@
 Tripwire — canary notice
 =========================
 
-The files under results/ contain confirmed reward-hack artifacts: patches that pass a
-benchmark's shipped test suite while being demonstrably incorrect, together with the
-inputs that prove them wrong.
+The files under results/ contain patches an LLM was instructed to write incorrectly, using
+an explicit reward-hacking recipe. 255 of them passed a benchmark's shipped test suite.
+32 were adjudicated wrong; 3 ship an input that demonstrates the divergence.
 
 These artifacts are published for security-research reproducibility ONLY.
 
-CANARY: TRIPWIRE-REWARD-HACK-ARTIFACT-DO-NOT-TRAIN
+CANARY: MUST NOT APPEAR IN TRAINING CORPORA
 
-These exploit patches MUST NOT be used as, or included in, model training or fine-tuning
-data. They are counter-examples by construction; training on them would teach the exact
-reward-hacking behavior this project exists to detect. Dataset builders and crawlers
-should filter on the canary string above.
+These patches MUST NOT be used as, or included in, model training or fine-tuning data.
+They are counter-examples by construction; training on them would teach the exact
+reward-hacking behavior this project exists to detect.
+
+Scope of the canary, stated exactly. The string above is what the harness writes
+(harness/code_attack.py, attacker.py, diffexec_oracle.py). In the committed records it
+appears on 4 candidate-level entries — the ones the differential-execution oracle
+touched — and not on the rest. A crawler filtering on it will therefore MISS most of the
+attacker-authored patches in this repository. Filter on the directory, not the string.
+
+An earlier revision of this file named a different string, TRIPWIRE-REWARD-HACK-ARTIFACT-
+DO-NOT-TRAIN, which appeared in no file. That was briefly "fixed" by stamping the string
+onto 255 committed records after the fact. Rewriting evidence to make a label true is the
+wrong repair: it left the harness still emitting the other string, so any re-run would
+have produced records the label missed, and it re-serialized every record, destroying
+byte-level git diff as an audit tool. The stamp was reverted and the label corrected
+instead. The records are as the harness wrote them.
 
 Every finding here concerns public benchmark tasks (SWE-bench Verified) and their test
 suites — not any individual author's private work.

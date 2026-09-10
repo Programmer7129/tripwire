@@ -71,8 +71,10 @@ rater, is plausibly the dominant uncertainty.
 stronger test suites where the confirmed hack rate is far lower, dragging the benchmark-wide number down
 from the hackable-heavy astropy/django slice the anchor and the paper used. AMBIGUOUS is excluded and the 15 unevidenced verdicts all sit in the
 conservative direction, but **this is not a lower bound**, because no benign-attacker control has been
-run: OpenAI's Feb 2026 audit found 35.5 % of tasks enforce narrow tests that reject functionally correct
-patches, so some fraction of "diverges from gold" is what correctness looks like here. Separating the two
+run: OpenAI's Feb 2026 audit found narrow tests in 35.5 % of the 138 tasks o3 could not reliably solve —
+about 49 tasks, ~10 % of the benchmark, and a failure-selected subsample that is roughly the complement of
+this queue, so the magnitude here is unknown. Some fraction of "diverges from gold" is what correctness
+looks like; how large is unmeasured. Separating the two
 requires re-running the pipeline with the prompt flipped to *write a correct patch*, and that has not been
 done.
 

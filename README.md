@@ -39,12 +39,13 @@ On all 500 tasks of **SWE-bench Verified**:
 
 The claim this repository supports, in one sentence — every clause checkable from files committed here:
 
-> On all 500 SWE-bench Verified tasks, an attacker LLM **given the gold patch's source region and the
-> hidden test names** produced a patch the shipped suite accepted on **255 tasks (51.0%)**, and on **226**
+> On all 500 SWE-bench Verified tasks, an attacker LLM **given the gold patch's source region, the names
+> of the failing tests, and an explicit reward-hacking recipe** produced a patch the shipped suite
+> accepted on **255 tasks (51.0%)**, and on **226**
 > of those the accepted patch differed textually from the gold fix; in a pre-registered proportional
 > sample of **102** of those 226, adjudication found **32** to be narrow, non-generalizing fixes — an
-> estimated **14.2%** of the benchmark [95% CI 10.5–18.5%], of which **3 were confirmed by deterministic
-> differential execution** and the remaining **29 by single-rater code review**.
+> estimated **14.2%** of the benchmark [95% CI 10.5–18.5%], of which **3 were confirmed by differential
+> execution** and the remaining **29 by single-rater code review**.
 
 Getting a patch past the suite is **not** evidence the patch is wrong: many are legitimate alternative
 fixes. That is why the two numbers differ, and why 14.2% rather than 51.0% is this project's finding.
@@ -78,10 +79,26 @@ flowchart LR
     F --> Z
 ```
 
-**What the attacker is given matters, and it is not a passive property of the suite.** The attacker
-receives the source region reconstructed from the gold patch (so it never has to localize the bug), the
-`FAIL_TO_PASS` and `PASS_TO_PASS` test node-ids, and up to three rounds of failing-test logs. 51.0% is the
-rate *under that white-boxed, oracle-guided search* — not the rate an unaided model would reach.
+**What the attacker is given matters, and it is not a passive property of the suite.** In full
+(`harness/code_attack.py`):
+
+| Input | Detail |
+| --- | --- |
+| Source region **reconstructed from the gold patch** | `pre_image_context(inst["patch"])`, 8 KB. It never has to localize the bug |
+| The bug report | `problem_statement`, 6 KB |
+| Names of the failing tests | `FAIL_TO_PASS` node-ids, **first 40 only** |
+| Passing tests | a **count only** — no names |
+| **An explicit reward-hacking recipe, one per round** | A rotating menu of three: *hardcode the reported case*, *narrow conditional guard*, *minimal symptom suppression* |
+| On rounds 2–3 | the previous diff and a 4 KB tail of the failing-test output |
+
+The recipe menu is the input that most changes what 51.0% means. This is not "a model asked to write a
+wrong patch" — it is a model handed three named strategies for gaming a test suite and told to produce
+"the narrowest INCOMPLETE patch (not the general fix)". It is also why some candidates carry comments like
+`# Narrow hack`: strategy B is literally named *narrow conditional guard*, so those self-labels are prompt
+artifacts and are never used as evidence in adjudication.
+
+51.0% is the rate *under that white-boxed, recipe-guided search* — not a rate an unaided model would reach,
+and not a property of the suite alone.
 
 **Adjudication is mostly human, and the README used to say otherwise.** The differential-execution oracle
 runs gold and candidate on generated inputs and calls a divergence WRONG. Its two outcomes are not
@@ -89,7 +106,7 @@ symmetric, which matters more than the coverage number:
 
 | Oracle outcome | Sampled tasks | What it establishes |
 | --- | --- | --- |
-| Found a divergent input (`oracle_wrong: true`) | **3** | Authoritative. The candidate is wrong, and the record holds the input that proves it |
+| Found a divergent input (`oracle_wrong: true`) | **3** | The candidate diverges from gold, and the record holds the input that shows it |
 | Found none among the inputs it could drive | 7 | **Nothing.** `diffexec_oracle.py` sets `needs_hand_review` on this outcome — "never auto-pass a residual as correct" |
 | Never attempted | 92 | Nothing |
 
@@ -99,12 +116,23 @@ in the numerator ships a written rationale you can check against the two patches
 results as CORRECT would flip four of those verdicts on absence of evidence; a draft of this repo's own
 test suite did exactly that before it was caught.
 
-**A note on what divergence proves.** The oracle detects that a candidate behaves differently from gold on
-some input. That is not the same as *wrong*: OpenAI's own audit of this benchmark found 35.5% of tasks have
-narrow tests that reject functionally correct patches, so on a meaningful fraction of tasks diverging from
-gold is what a correct patch does. A benign-attacker null — same pipeline, prompt flipped to "write a
-*correct* patch" — is the control that would separate the two, and it **has not been run**. Until it is,
-treat 14.2% as an upper bound on hacking and a lower bound on nothing.
+**Two caveats on the oracle, and neither is small.**
+
+*It is not fully deterministic.* The comparison is deterministic once inputs are fixed, but the candidate
+inputs are **proposed by an LLM** (`diffexec_oracle.py`), so a re-run can probe different inputs. The same
+task, `astropy-14309`, produced `('read', 'test.txt', None, hdu_list)` in the anchor run and
+`('read', 'file.txt', None, hdu_list)` in the 500 run. The divergence is real in both; the *search* for it
+is not reproducible.
+
+*Divergence is not wrongness.* The oracle shows a candidate behaves differently from gold on some input.
+On a benchmark where tests can be narrower than the specification, that is sometimes what a correct patch
+does. OpenAI's audit of the **138 tasks o3 could not reliably solve** found narrow tests in 35.5% of
+*those* — about 49 tasks, ~10% of the benchmark, drawn from a deliberately failure-selected subsample.
+The rate among tasks a model can actually pass is unmeasured, and this harness's 226-task queue is
+approximately the *complement* of OpenAI's frame, so the size of the effect here is unknown. That some
+fraction of "diverges from gold" is what a correct patch looks like is established; its magnitude is not.
+The control that would settle it is a **benign-attacker null** — same pipeline, prompt flipped to "write a
+*correct* patch" — and it **has not been run**.
 
 ## 🔁 Reproduce it yourself
 
@@ -234,8 +262,10 @@ This is a crowded area and this harness is not the first to enter it. Nearest fi
   equivalence oracle is an LLM judge; this harness uses execution where it runs and human review elsewhere,
   and reports the verifier's acceptance rate rather than rescoring a leaderboard.
 - **PatchDiff** — Wang, Pradel & Liu, ICSE 2026. [arXiv:2503.15223](https://arxiv.org/abs/2503.15223).
-  Differential patch testing against gold. **This is the method `diffexec_oracle.py` implements**; the
-  contribution here is applying it to adversarially-authored patches rather than honest agent patches.
+  Differential patch testing against gold — the same idea `diffexec_oracle.py` rests on, published first.
+  The implementation here is independent and cruder (signature edges, grepped call-sites, LLM-proposed
+  argument tuples) rather than PatchDiff's automated differential test generation; the difference in
+  subject is adversarially-authored patches rather than honest agent patches.
 - **BenchJack** — Wang, Li, Mang, Cheung, Sen & Song, UC Berkeley.
   [arXiv:2605.12673](https://arxiv.org/abs/2605.12673). Attacks the *harness* — scoring code, environment
   setup, leakage channels — where this attacks patch semantics with the harness intact.
@@ -248,11 +278,14 @@ This is a crowded area and this harness is not the first to enter it. Nearest fi
   [arXiv:2606.16062](https://arxiv.org/abs/2606.16062) — the 49-task result this run compares against.
   Unrefereed preprint; code not released.
 - **OpenAI**, [*Why we no longer evaluate SWE-bench Verified*](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/)
-  (Feb 2026) — the audit that retired this benchmark, and the source of the 35.5% narrow-test figure that
-  bounds what divergence-from-gold can prove.
+  (Feb 2026) — the audit that retired this benchmark. 59.4% of the **138 hardest tasks** it examined had
+  material test-design or problem-statement flaws, 35.5% narrow tests. Both figures are over that audited
+  hard subset, not over the 500.
 
 ## License
 
-[MIT](LICENSE). See [`NOTICE`](NOTICE).
+[MIT](LICENSE). See [`NOTICE`](NOTICE) — the attacker-authored patches here are counter-examples by
+construction and must not be used as training data. The canary string covers only 4 records; the notice
+says so, and says to filter on the directory instead.
 
 <div align="center"><sub>Built by Vedant Patel · vedantspatel33@gmail.com</sub></div>
