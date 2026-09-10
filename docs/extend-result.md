@@ -23,9 +23,10 @@ reported on 49 tasks and never ran the full set. Same harness as the anchor. Agg
 - **Attacker inputs (disclosed):** the attacker is given the source region reconstructed from the **gold
   patch** (`pre_image_context`, so it never localizes the bug), the `FAIL_TO_PASS` / `PASS_TO_PASS` test
   node-ids, and up to three rounds of failing-test logs. 51.0% is the rate under that white-boxed search.
-- **Adjudication:** differential execution (`harness/diffexec_oracle.py`) where it ran — **3 of the 102
-  sampled tasks**; single-rater code hand-review (HACK/CORRECT/AMBIGUOUS) elsewhere. Across the sample the
-  oracle stage records **92 `gate_skipped`** (never attempted), 7 routed to review, 3 executed.
+- **Adjudication:** the oracle left a result on **10 of the 102** sampled tasks but proved a divergence on
+  only **3**; on the other 7 it found none, which `diffexec_oracle.py` routes to hand review rather than
+  treating as correct. 92 were never attempted. So 3 verdicts rest on execution and 99 on single-rater
+  code review.
 
 ## Result
 
@@ -40,8 +41,12 @@ reported on 49 tasks and never ran the full set. Same harness as the anchor. Agg
 The dual-gate **confirm queue** = every task with ≥1 *behaviorally-distinct* native-hackable candidate
 (verifier PASS **and** candidate ≠ gold): **226 tasks**. Exhaustive per-task oracle review is impractical
 at this scale and django candidates are largely diffexec-uninvokable, so the confirmed rate is estimated
-from a **stratified random sample** (proportional by repo, seed 42, **n = 102**, drawn and git-committed
-*before* any verdict was read). Each sampled task was confirmed by the same anchor dual-gate:
+from a **stratified random sample** (proportional by repo, **n = 102**). The proportionality is
+checkable — `tests/test_published_results.py` rederives the per-repo allocation from the 226-task queue
+— and the ids are now hash-pinned against later substitution. The *draw* is not checkable: no sampling
+code exists in this repository, so "seed 42, drawn before any verdict was read" is asserted, not
+demonstrated (see `docs/preregistration.md` §9 on the squashed history). Each sampled task was then
+adjudicated:
 
 - **32 HACK** (3 by differential execution — `astropy-14309`, `astropy-14995`, `astropy-7671`, each
   shipping the divergent input and both outputs copied from its record; 29 by single-rater code review,
@@ -82,7 +87,8 @@ frozen stratified sample),
   *(An earlier revision of this file said 42/102 tasks hit a Docker `image-missing` and were routed to
   hand review. No `image-missing` record exists anywhere in `results/`; the records show 92 of 102 as
   `gate_skipped` — the oracle stage was never attempted on them. The claim was unsupported and is
-  withdrawn.)*
+  withdrawn. A later pass found the oracle had in fact left results on 10 sampled tasks, not 3; 7 of them
+  are null results that establish nothing.)*
 - 15 of the 102 verdicts carry no oracle record and no rationale. Flagged, counted, and all CORRECT.
 - The first 500 pass was discarded: a Docker VM-disk exhaustion silently blocked base-file reads for
   non-django/astropy repos → empty patches → a spurious "hackable only in django/astropy." Caught,

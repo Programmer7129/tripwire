@@ -84,11 +84,20 @@ receives the source region reconstructed from the gold patch (so it never has to
 rate *under that white-boxed, oracle-guided search* — not the rate an unaided model would reach.
 
 **Adjudication is mostly human, and the README used to say otherwise.** The differential-execution oracle
-runs gold and candidate on generated inputs and calls a divergence WRONG. It ran on **3 of the 102**
-sampled tasks; on the other 92 it was never attempted (`gate_skipped` in the records) and 7 were routed to
-review. So the instrument that produced this number is **one person reading diffs, non-blind, with the
+runs gold and candidate on generated inputs and calls a divergence WRONG. Its two outcomes are not
+symmetric, which matters more than the coverage number:
+
+| Oracle outcome | Sampled tasks | What it establishes |
+| --- | --- | --- |
+| Found a divergent input (`oracle_wrong: true`) | **3** | Authoritative. The candidate is wrong, and the record holds the input that proves it |
+| Found none among the inputs it could drive | 7 | **Nothing.** `diffexec_oracle.py` sets `needs_hand_review` on this outcome — "never auto-pass a residual as correct" |
+| Never attempted | 92 | Nothing |
+
+So 3 of 102 verdicts rest on an execution and 99 rest on **one person reading diffs, non-blind, with the
 attacker's own commentary visible** — the same manual method the reference paper used. Every hand verdict
-that counts toward the numerator ships a written rationale you can check against the two patches.
+in the numerator ships a written rationale you can check against the two patches. Reading the 7 null
+results as CORRECT would flip four of those verdicts on absence of evidence; a draft of this repo's own
+test suite did exactly that before it was caught.
 
 **A note on what divergence proves.** The oracle detects that a candidate behaves differently from gold on
 some input. That is not the same as *wrong*: OpenAI's own audit of this benchmark found 35.5% of tasks have
@@ -141,9 +150,12 @@ python harness/swe_confirm.py       # 14.2% [10.5-18.5%] — Wilson interval
 pip install -e ".[dev]" && pytest -q
 ```
 
-`tests/test_verdict_provenance.py` is the one that matters: it joins every published verdict against the
-per-task record in `results/raw_swe_500/` and fails if a label claims an execution that never happened.
-It was added after that check was missing and 17 labels were wrong.
+`tests/test_verdict_provenance.py` checks published verdicts against the per-task records and fails if a
+label claims an execution that never happened — the check that was missing when 17 labels were wrong. Its
+own limits are stated at the top of the file: the oracle ran on 3 of the 102 sampled tasks, so the tests
+that compare a verdict against an execution constrain 3 verdicts. For the other 99 it checks that the
+record exists, still carries the accepted patch, and that the verdict declares its evidence. **No test can
+check that a hand-written rationale is true.**
 
 ## What's in this repo
 
@@ -177,6 +189,16 @@ docs/
   rater, no inter-rater agreement statistic. The 3 oracle-confirmed exhibits are `astropy-14309`,
   `astropy-14995` and `astropy-7671`; each ships the divergent input, gold's output and the candidate's,
   copied from its record.
+- **One sampled record is incomplete.** `sphinx-8120`'s stored patch is missing a hunk its own
+  `patch_meta` says was applied, and its rationale reasons about exactly that file — so that verdict
+  cannot be fully checked against the committed evidence. Verdict CORRECT, so it suppresses the rate.
+  Pinned in `tests/test_verdict_provenance.py` so the set can only shrink.
+- **One record contradicts itself.** `astropy-12907` holds two oracle results that disagree about the same
+  task. It is outside the sample and moves no published number, but it cannot be cited as evidence.
+- **The drawn sample can be asserted, not reproduced.** No sampling code exists in this repository and the
+  history opened as a single squashed commit, so "seed 42, stratified by repo" is a claim about how the
+  102 ids were chosen that nothing here demonstrates. A hash now pins them against later substitution;
+  that is drift protection, not provenance.
 - **15 of the 102 sampled verdicts rest on no recorded evidence at all** — no oracle record, no rationale.
   All 15 are CORRECT, so they suppress the rate rather than inflating it, and they are flagged
   `"evidence": "none-recorded"` in the verdicts file. A test asserts that count and that direction.
