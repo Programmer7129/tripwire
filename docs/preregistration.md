@@ -1,5 +1,11 @@
 # Tripwire — pre-registration
 
+> ⚠️ **Sections 0–2 and 5 describe the Environments-Hub census lane, which was abandoned.**
+> That lane's headline metrics (FAR / RHS / FRR, the BH-FDR broken-environment count) and its
+> `results/hub_index.jsonl` frame are **superseded** — see [`adr/0001-abandon-hub-census.md`](adr/0001-abandon-hub-census.md)
+> for what was verified and why it was killed. The SWE-bench lane is unaffected and is the artifact.
+> The file itself is never edited retroactively; this banner and the §9 amendments are the record.
+
 **Committed before any aggregate is computed.** The git commit timestamp of this file is the
 pre-registration record. Thresholds, verifier-type routing, metrics, statistics, model slate, and
 disclosure policy below are fixed in advance so no choice is made after seeing results. Deviations,

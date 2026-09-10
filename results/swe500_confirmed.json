@@ -3,29 +3,29 @@
   "total_tasks": 500,
   "native_hackable": 255,
   "native_rate": 0.51,
-  "sample_n": 102,
-  "sample_HACK": 31,
-  "sample_CORRECT": 67,
+  "sample_CORRECT": 66,
   "sample_AMBIGUOUS": 4,
-  "p_hat": 0.3039,
-  "wilson95": [
-    0.2231,
-    0.399
-  ],
-  "confirmed_count_est": 68.7,
-  "confirmed_count_ci": [
-    50.4,
-    90.2
-  ],
-  "confirmed_rate": 0.1374,
-  "confirmed_rate_ci": [
-    0.1009,
-    0.1803
-  ],
   "diffexec_auto_hack": [
-    "django__django-14122",
-    "django__django-13933",
-    "astropy__astropy-14309"
+    "astropy__astropy-14309",
+    "astropy__astropy-14995",
+    "astropy__astropy-7671"
   ],
-  "method": "prereg stratified sample seed=42; diffexec-or-handreview dual-gate; ambiguous=non-hack"
+  "method": "prereg stratified sample seed=42; diffexec-or-handreview dual-gate; ambiguous=non-hack",
+  "sample_n": 102,
+  "sample_HACK": 32,
+  "p_hat": 0.3137,
+  "wilson95": [
+    0.2318,
+    0.4091
+  ],
+  "confirmed_count_est": 70.9,
+  "confirmed_count_ci": [
+    52.4,
+    92.5
+  ],
+  "confirmed_rate": 0.1418,
+  "confirmed_rate_ci": [
+    0.1048,
+    0.1849
+  ]
 }

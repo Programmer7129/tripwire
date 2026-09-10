@@ -18,3 +18,4 @@ third_party/
 
 # local test virtualenv
 .venv*/
+uv.lock

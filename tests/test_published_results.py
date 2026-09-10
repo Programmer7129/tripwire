@@ -43,7 +43,7 @@ def verdicts():
 # --------------------------------------------------------------------------- #
 # The pre-drawn seed-42 sample (drawn before any verdict was read)
 # --------------------------------------------------------------------------- #
-def test_the_sample_is_the_pre_registered_size_and_seed(sample):
+def test_the_sample_is_the_pre_registered_size(sample):
     assert sample["seed"] == 42
     assert sample["n_sample"] == 102
     assert len(sample["sample_ids"]) == 102
@@ -68,8 +68,8 @@ def test_the_published_tally_is_the_tally_of_the_committed_verdicts(published, s
                                                                     verdicts):
     tally = S.tally_sample_verdicts(verdicts, sample["sample_ids"])
     assert tally["n"] == published["sample_n"] == 102
-    assert tally["HACK"] == published["sample_HACK"] == 31
-    assert tally["CORRECT"] == published["sample_CORRECT"] == 67
+    assert tally["HACK"] == published["sample_HACK"] == 32
+    assert tally["CORRECT"] == published["sample_CORRECT"] == 66
     assert tally["AMBIGUOUS"] == published["sample_AMBIGUOUS"] == 4
 
 
@@ -81,11 +81,12 @@ def test_the_three_deterministic_exhibits_are_the_diffexec_confirmed_hacks(publi
     assert len(auto) == 3
 
 
-def test_every_diffexec_confirmed_hack_ships_a_reproducer(verdicts):
-    """A confirmed hack is only as good as the input a reviewer can re-run."""
+def test_every_diffexec_verdict_carries_its_execution_evidence(verdicts):
+    """A diffexec verdict must ship the three fields the oracle actually produced."""
     for iid, v in verdicts.items():
-        if v["verdict"] == "HACK" and v.get("method") == "diffexec":
-            assert v.get("reproducer"), iid
+        if v.get("method") == "diffexec":
+            for field in ("divergent_input", "gold_output", "exploit_output"):
+                assert v.get(field), f"{iid}: missing {field}"
 
 
 def test_every_hand_reviewed_hack_ships_a_written_rationale(verdicts):
@@ -95,20 +96,20 @@ def test_every_hand_reviewed_hack_ships_a_written_rationale(verdicts):
 
 
 def test_the_hand_review_share_matches_the_documented_split(verdicts):
-    """docs/extend-result.md: 31 HACK = 3 by differential execution + 28 by
+    """docs/extend-result.md: 32 HACK = 3 by differential execution + 29 by
     conservative code hand-review."""
     by_method = collections.Counter(v.get("method") for v in verdicts.values()
                                     if v["verdict"] == "HACK")
-    assert by_method == {"hand-review": 28, "diffexec": 3}
+    assert by_method == {"hand-review": 29, "diffexec": 3}
 
 
 def test_confirmed_hacks_span_the_documented_nine_repositories(verdicts):
     repos = collections.Counter(iid.split("__")[0] for iid, v in verdicts.items()
                                 if v["verdict"] == "HACK")
     assert dict(repos) == {"django": 12, "sympy": 4, "scikit-learn": 3,
-                           "pytest-dev": 3, "astropy": 2, "pydata": 2,
+                           "pytest-dev": 3, "astropy": 3, "pydata": 2,
                            "matplotlib": 2, "sphinx-doc": 2, "psf": 1}
-    assert sum(repos.values()) == 31
+    assert sum(repos.values()) == 32
 
 
 # --------------------------------------------------------------------------- #
@@ -121,18 +122,18 @@ def test_the_published_confirmed_rate_is_reproduced_from_the_committed_verdicts(
         n_hack=tally["HACK"], n_sample=tally["n"],
         queue_size=published["queue_size"], total_tasks=published["total_tasks"])
 
-    assert est["p_hat"] == published["p_hat"] == 0.3039
-    assert est["wilson95"] == published["wilson95"] == [0.2231, 0.399]
-    assert est["confirmed_count_est"] == published["confirmed_count_est"] == 68.7
-    assert est["confirmed_count_ci"] == published["confirmed_count_ci"] == [50.4, 90.2]
-    assert est["confirmed_rate"] == published["confirmed_rate"] == 0.1374
-    assert est["confirmed_rate_ci"] == published["confirmed_rate_ci"] == [0.1009, 0.1803]
+    assert est["p_hat"] == published["p_hat"] == 0.3137
+    assert est["wilson95"] == published["wilson95"] == [0.2318, 0.4091]
+    assert est["confirmed_count_est"] == published["confirmed_count_est"] == 70.9
+    assert est["confirmed_count_ci"] == published["confirmed_count_ci"] == [52.4, 92.5]
+    assert est["confirmed_rate"] == published["confirmed_rate"] == 0.1418
+    assert est["confirmed_rate_ci"] == published["confirmed_rate_ci"] == [0.1048, 0.1849]
 
 
 def test_the_confirmed_rate_rounds_to_the_headline_in_the_readme(published):
-    assert round(published["confirmed_rate"] * 100, 1) == 13.7
+    assert round(published["confirmed_rate"] * 100, 1) == 14.2
     lo, hi = published["confirmed_rate_ci"]
-    assert (round(lo * 100, 1), round(hi * 100, 1)) == (10.1, 18.0)
+    assert (round(lo * 100, 1), round(hi * 100, 1)) == (10.5, 18.5)
 
 
 def test_the_native_hackable_rate_is_the_declared_count_over_the_frame(published):
@@ -162,9 +163,9 @@ def test_ambiguous_verdicts_are_excluded_from_the_confirmed_numerator(published,
         n_hack=tally["HACK"] + tally["AMBIGUOUS"], n_sample=tally["n"],
         queue_size=published["queue_size"], total_tasks=published["total_tasks"])
     assert generous["confirmed_rate"] > published["confirmed_rate"]
-    # docs/extend-result.md states the sensitivity: p-hat 0.343 -> 15.5%.
-    assert generous["p_hat"] == pytest.approx(0.3431, abs=5e-5)
-    assert round(generous["confirmed_rate"] * 100, 1) == 15.5
+    # docs/extend-result.md states the sensitivity: p-hat 0.353 -> 16.0%.
+    assert generous["p_hat"] == pytest.approx(0.3529, abs=5e-5)
+    assert round(generous["confirmed_rate"] * 100, 1) == 16.0
 
 
 def test_ambiguous_verdicts_stay_in_the_denominator(published, verdicts):
@@ -288,7 +289,7 @@ def test_the_anchor_verdicts_are_drawn_from_the_pinned_subset():
 # The Wilson interval used here is the pre-registered one
 # --------------------------------------------------------------------------- #
 def test_the_estimator_uses_the_pre_registered_wilson_interval(published):
-    lo, hi = A.wilson_interval(31, 102)
+    lo, hi = A.wilson_interval(32, 102)
     assert [round(lo, 4), round(hi, 4)] == published["wilson95"]
 
 

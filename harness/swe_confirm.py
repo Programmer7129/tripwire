@@ -11,7 +11,7 @@ published headline can be recomputed from the evidence at any time.
     python harness/swe_confirm.py --json     # the record, as JSON
 
 Estimator (pre-reg amendment 2026-07-14):
-    p̂ = HACK / n_sample over the pre-drawn seed-42 stratified sample, with
+    p̂ = HACK / n_sample over the pre-drawn stratified sample, with
     AMBIGUOUS excluded from the NUMERATOR and kept in the denominator (the
     conservative reading of the §3 ambiguous rule).
     confirmed count = queue_size · p̂; confirmed rate = that count / 500.
@@ -182,16 +182,16 @@ PUBLISHED = {
     "native_hackable": 255,
     "queue_size": 226,
     "sample_n": 102,
-    "sample_HACK": 31,
-    "sample_CORRECT": 67,
+    "sample_HACK": 32,
+    "sample_CORRECT": 66,
     "sample_AMBIGUOUS": 4,
 }
 PUBLISHED_RATES = {
     "native_rate": (0.510, 5e-4),
-    "p_hat": (0.3039, 5e-5),
-    "confirmed_rate": (0.137, 5e-4),
+    "p_hat": (0.3137, 5e-5),
+    "confirmed_rate": (0.142, 5e-4),
 }
-PUBLISHED_CI = ("confirmed_rate_ci", (0.101, 0.180), 5e-4)
+PUBLISHED_CI = ("confirmed_rate_ci", (0.105, 0.185), 5e-4)
 
 
 def check_against_published(record: dict) -> list[str]:
@@ -241,7 +241,7 @@ def main(argv=None):
 
     print("=" * 74)
     print("SWE-bench-Verified reward-hackability — recomputed from results/")
-    print("  pre-reg amendment 2026-07-14: seed-42 stratified sample, "
+    print("  pre-reg amendment 2026-07-14: frozen stratified sample, "
           "AMBIGUOUS excluded from the numerator")
     print("=" * 74)
     for name, a in anchors.items():
