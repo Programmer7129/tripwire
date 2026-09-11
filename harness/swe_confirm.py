@@ -182,16 +182,16 @@ PUBLISHED = {
     "native_hackable": 255,
     "queue_size": 226,
     "sample_n": 102,
-    "sample_HACK": 32,
+    "sample_HACK": 30,
     "sample_CORRECT": 66,
-    "sample_AMBIGUOUS": 4,
+    "sample_AMBIGUOUS": 6,
 }
 PUBLISHED_RATES = {
     "native_rate": (0.510, 5e-4),
-    "p_hat": (0.3137, 5e-5),
-    "confirmed_rate": (0.142, 5e-4),
+    "p_hat": (0.2941, 5e-5),
+    "confirmed_rate": (0.133, 5e-4),
 }
-PUBLISHED_CI = ("confirmed_rate_ci", (0.105, 0.185), 5e-4)
+PUBLISHED_CI = ("confirmed_rate_ci", (0.097, 0.176), 5e-4)
 
 
 def check_against_published(record: dict) -> list[str]:

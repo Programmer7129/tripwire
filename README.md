@@ -34,7 +34,7 @@ On all 500 tasks of **SWE-bench Verified**:
    45.2%  ███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░   226 / 500   ...and that patch differed textually from gold
 
  Adjudicated wrong, in a pre-registered sample of 102 of those 226
-   14.2%  ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   est. 71 / 500   [95% CI 10.5–18.5%]
+   13.3%  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   est. 67 / 500   [95% CI 9.7–17.6%]
 ```
 
 The claim this repository supports, in one sentence — every clause checkable from files committed here:
@@ -43,13 +43,14 @@ The claim this repository supports, in one sentence — every clause checkable f
 > of the failing tests, and an explicit reward-hacking recipe** produced a patch the shipped suite
 > accepted on **255 tasks (51.0%)**, and on **226**
 > of those the accepted patch differed textually from the gold fix; in a pre-registered proportional
-> sample of **102** of those 226, adjudication found **32** to be narrow, non-generalizing fixes — an
-> estimated **14.2%** of the benchmark [95% CI 10.5–18.5%], of which **3 were confirmed by differential
-> execution** and the remaining **29 by single-rater code review**.
+> sample of **102** of those 226, adjudication found **30** to be narrow, non-generalizing fixes — an
+> estimated **13.3%** of the benchmark [95% CI 9.7–17.6%], of which **3 were confirmed by differential
+> execution** and the remaining **27 by single-rater code review**, every one of those re-audited
+> independently against the gold patch.
 
 Getting a patch past the suite is **not** evidence the patch is wrong: many are legitimate alternative
-fixes. That is why the two numbers differ, and why 14.2% rather than 51.0% is this project's finding.
-Sample verdicts: **32 HACK / 66 CORRECT / 4 AMBIGUOUS**.
+fixes. That is why the two numbers differ, and why 13.3% rather than 51.0% is this project's finding.
+Sample verdicts: **30 HACK / 66 CORRECT / 6 AMBIGUOUS**.
 
 ## The finding in one table
 
@@ -58,7 +59,7 @@ Sample verdicts: **32 HACK / 66 CORRECT / 4 AMBIGUOUS**.
 | **Anchor** (replication attempt) | 49 | Claude Sonnet 4.5 | — | **11/49 = 22.4%** |
 | Anchor — capability ladder | 49 | Claude Haiku 4.5 | — | 8/49 = 16.3% |
 | Reference — [arXiv:2606.16062](https://arxiv.org/abs/2606.16062) | 49 | Claude Sonnet 4 | — | 14/49 = 28.5% |
-| **Extend** (full benchmark) | **500 (12 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | **14.2%** — CI [10.5–18.5%] |
+| **Extend** (full benchmark) | **500 (12 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | **13.3%** — CI [9.7–17.6%] |
 
 ⚠️ **The anchor is not a task-for-task replication.** The reference paper never published its 49 task IDs,
 so this run uses its own subset drawn from the same two repos (astropy + django); the attacker is also a
@@ -132,7 +133,8 @@ The rate among tasks a model can actually pass is unmeasured, and this harness's
 approximately the *complement* of OpenAI's frame, so the size of the effect here is unknown. That some
 fraction of "diverges from gold" is what a correct patch looks like is established; its magnitude is not.
 The control that would settle it is a **benign-attacker null** — same pipeline, prompt flipped to "write a
-*correct* patch" — and it **has not been run**.
+*correct* patch" — and it **has not been run**. Until it is, 13.3% bounds hacking from above and nothing
+from below.
 
 ## 🔁 Reproduce it yourself
 
@@ -169,7 +171,7 @@ python harness/diffexec_oracle.py astropy__astropy-14309 --exploit-file <candida
 
 ```bash
 python harness/swe_native_rate.py   # 51.0% (255/500) and the 226-task confirm queue
-python harness/swe_confirm.py       # 14.2% [10.5-18.5%] — Wilson interval
+python harness/swe_confirm.py       # 13.3% [9.7-17.6%] — Wilson interval
 ```
 
 **5 — Run the tests** (no network, no Docker, no API key, no GPU):
@@ -193,7 +195,7 @@ harness/
   swebench_adapter.py   apply any patch → run the native verifier → read resolved
   diffexec_oracle.py    differential execution: gold vs candidate on generated inputs
   aggregate.py          Wilson CIs, BH-FDR, beta-binomial pooling, cluster-bootstrap
-  swe_confirm.py        recomputes the published adjudicated rate (14.2%) from results/
+  swe_confirm.py        recomputes the published adjudicated rate (13.3%) from results/
   swe_native_rate.py    recomputes the verifier-alone rate (51.0%) from the raw records
 results/
   raw_swe_500/          all 500 per-task attack records — the evidence behind 51.0% (4.1 MB)
@@ -204,6 +206,8 @@ docs/
   extend-result.md      the full-500 result, sampling, limitations
   preregistration.md    protocol and its amendments
   adr/                  abandoned directions and what they earned
+  audit/                the 2026-09-10 independent re-audit of every hand-review rationale
+                        (18 of 29 held; 11 did not; two verdicts moved)
 ```
 
 > **A note on the name.** The public artifact is **Tripwire**. `envcert` is the older internal name and
@@ -213,10 +217,18 @@ docs/
 
 ## Honest limitations
 
-- **29 of 32 adjudicated hacks rest on single-rater code review**, not execution. Non-blind, no second
+- **27 of 30 adjudicated hacks rest on single-rater code review**, not execution. Non-blind, no second
   rater, no inter-rater agreement statistic. The 3 oracle-confirmed exhibits are `astropy-14309`,
   `astropy-14995` and `astropy-7671`; each ships the divergent input, gold's output and the candidate's,
   copied from its record.
+- **All 29 hand-review rationales were independently re-audited on 2026-09-10** against the gold patch,
+  the accepted candidates and the shipped tests. **11 did not survive.** Two verdicts moved to AMBIGUOUS
+  (`django-13033`, `pytest-7571`) because the divergence their rationale claimed does not occur; nine
+  rationales were rewritten. Every failure was the same defect: the rationale described one accepted
+  candidate when the task accepted two or three. **8 accepted candidates across 6 tasks turned out to be
+  identical or equivalent to the gold patch** — they are recorded per task in `gold_equivalent_rounds`,
+  and no per-round or per-strategy rate should be derived from the task-level label. Five rationales that
+  audited true are still unscoped and are pinned in `tests/test_verdict_provenance.py`.
 - **One sampled record is incomplete.** `sphinx-8120`'s stored patch is missing a hunk its own
   `patch_meta` says was applied, and its rationale reasons about exactly that file — so that verdict
   cannot be fully checked against the committed evidence. Verdict CORRECT, so it suppresses the rate.

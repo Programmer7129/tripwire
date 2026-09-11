@@ -68,9 +68,9 @@ def test_the_published_tally_is_the_tally_of_the_committed_verdicts(published, s
                                                                     verdicts):
     tally = S.tally_sample_verdicts(verdicts, sample["sample_ids"])
     assert tally["n"] == published["sample_n"] == 102
-    assert tally["HACK"] == published["sample_HACK"] == 32
+    assert tally["HACK"] == published["sample_HACK"] == 30
     assert tally["CORRECT"] == published["sample_CORRECT"] == 66
-    assert tally["AMBIGUOUS"] == published["sample_AMBIGUOUS"] == 4
+    assert tally["AMBIGUOUS"] == published["sample_AMBIGUOUS"] == 6
 
 
 def test_the_three_deterministic_exhibits_are_the_diffexec_confirmed_hacks(published,
@@ -96,20 +96,20 @@ def test_every_hand_reviewed_hack_ships_a_written_rationale(verdicts):
 
 
 def test_the_hand_review_share_matches_the_documented_split(verdicts):
-    """docs/extend-result.md: 32 HACK = 3 by differential execution + 29 by
+    """docs/extend-result.md: 30 HACK = 3 by differential execution + 27 by
     conservative code hand-review."""
     by_method = collections.Counter(v.get("method") for v in verdicts.values()
                                     if v["verdict"] == "HACK")
-    assert by_method == {"hand-review": 29, "diffexec": 3}
+    assert by_method == {"hand-review": 27, "diffexec": 3}
 
 
 def test_confirmed_hacks_span_the_documented_nine_repositories(verdicts):
     repos = collections.Counter(iid.split("__")[0] for iid, v in verdicts.items()
                                 if v["verdict"] == "HACK")
-    assert dict(repos) == {"django": 12, "sympy": 4, "scikit-learn": 3,
-                           "pytest-dev": 3, "astropy": 3, "pydata": 2,
+    assert dict(repos) == {"django": 11, "sympy": 4, "scikit-learn": 3,
+                           "astropy": 3, "pytest-dev": 2, "pydata": 2,
                            "matplotlib": 2, "sphinx-doc": 2, "psf": 1}
-    assert sum(repos.values()) == 32
+    assert sum(repos.values()) == 30
 
 
 # --------------------------------------------------------------------------- #
@@ -122,18 +122,18 @@ def test_the_published_confirmed_rate_is_reproduced_from_the_committed_verdicts(
         n_hack=tally["HACK"], n_sample=tally["n"],
         queue_size=published["queue_size"], total_tasks=published["total_tasks"])
 
-    assert est["p_hat"] == published["p_hat"] == 0.3137
-    assert est["wilson95"] == published["wilson95"] == [0.2318, 0.4091]
-    assert est["confirmed_count_est"] == published["confirmed_count_est"] == 70.9
-    assert est["confirmed_count_ci"] == published["confirmed_count_ci"] == [52.4, 92.5]
-    assert est["confirmed_rate"] == published["confirmed_rate"] == 0.1418
-    assert est["confirmed_rate_ci"] == published["confirmed_rate_ci"] == [0.1048, 0.1849]
+    assert est["p_hat"] == published["p_hat"] == 0.2941
+    assert est["wilson95"] == published["wilson95"] == [0.2145, 0.3887]
+    assert est["confirmed_count_est"] == published["confirmed_count_est"] == 66.5
+    assert est["confirmed_count_ci"] == published["confirmed_count_ci"] == [48.5, 87.8]
+    assert est["confirmed_rate"] == published["confirmed_rate"] == 0.1329
+    assert est["confirmed_rate_ci"] == published["confirmed_rate_ci"] == [0.0969, 0.1757]
 
 
 def test_the_confirmed_rate_rounds_to_the_headline_in_the_readme(published):
-    assert round(published["confirmed_rate"] * 100, 1) == 14.2
+    assert round(published["confirmed_rate"] * 100, 1) == 13.3
     lo, hi = published["confirmed_rate_ci"]
-    assert (round(lo * 100, 1), round(hi * 100, 1)) == (10.5, 18.5)
+    assert (round(lo * 100, 1), round(hi * 100, 1)) == (9.7, 17.6)
 
 
 def test_the_native_hackable_rate_is_the_declared_count_over_the_frame(published):
@@ -289,7 +289,7 @@ def test_the_anchor_verdicts_are_drawn_from_the_pinned_subset():
 # The Wilson interval used here is the pre-registered one
 # --------------------------------------------------------------------------- #
 def test_the_estimator_uses_the_pre_registered_wilson_interval(published):
-    lo, hi = A.wilson_interval(32, 102)
+    lo, hi = A.wilson_interval(30, 102)
     assert [round(lo, 4), round(hi, 4)] == published["wilson95"]
 
 

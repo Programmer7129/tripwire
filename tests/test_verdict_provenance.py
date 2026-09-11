@@ -228,6 +228,74 @@ def test_the_declared_queue_size_matches_the_frame_the_estimate_uses():
             == read_result("swe500_confirmed.json")["queue_size"] == 226)
 
 
+# Tasks whose HACK rests on a subset of the accepted candidates. A rationale that
+# does not say WHICH round it establishes is the defect that broke 11 of 29
+# rationales in the 2026-09-10 audit: each task ran K=3 attacker rounds under a
+# different recipe, and in 8 cases at least one accepted candidate turned out to be
+# gold-equivalent — three rationales pointed at exactly those.
+_ROUND_WORDS = ("round 1", "round 2", "round 3", "rounds 1", "rounds 2")
+
+# Multi-candidate HACKs whose rationale was audited TRUE on 2026-09-10 but still
+# does not say which accepted candidate it establishes. Not rewritten, because
+# inventing scope text no auditor verified is how the django-13933 rationale went
+# wrong in the first place. A reader checking one of these must check every
+# accepted candidate in results/raw_swe_500/<id>.json themselves. This set can
+# only shrink.
+UNSCOPED_RATIONALES = {
+    "django__django-13933",
+    "django__django-14122",
+    "matplotlib__matplotlib-26291",
+    "scikit-learn__scikit-learn-10844",
+    "sphinx-doc__sphinx-8265",
+}
+
+
+def test_multi_candidate_hacks_name_the_round_their_rationale_establishes(verdicts):
+    """Truth cannot be tested. Scope can."""
+    offenders = []
+    for iid, v in verdicts.items():
+        if v["verdict"] != "HACK" or v.get("method") != "hand-review":
+            continue
+        raw = json.loads((RAW / f"{iid}.json").read_text())
+        accepted = sum(1 for c in raw.get("candidates", []) if c.get("native_resolved"))
+        if accepted < 2:
+            continue
+        text = (v.get("rationale") or "").lower()
+        scoped = (any(w in text for w in _ROUND_WORDS)
+                  or bool(v.get("gold_equivalent_rounds")))
+        if not scoped and iid not in UNSCOPED_RATIONALES:
+            offenders.append(iid)
+    assert not offenders, (
+        "hand-review HACK on a task with several accepted candidates, whose rationale "
+        f"never says which one it establishes: {sorted(offenders)}")
+
+
+def test_the_unscoped_set_only_shrinks(verdicts):
+    """Every pinned task must still be a multi-candidate hand-review HACK. If one
+    stops qualifying it should leave the set, never linger as cover for a new one."""
+    for iid in UNSCOPED_RATIONALES:
+        v = verdicts[iid]
+        assert v["verdict"] == "HACK" and v.get("method") == "hand-review", iid
+
+
+def test_gold_equivalent_candidates_are_recorded_where_found(verdicts):
+    """8 accepted candidates were found identical or equivalent to gold. They are
+    recorded per task so no per-round or per-strategy rate is ever derived from the
+    task-level HACK label."""
+    found = {iid: v["gold_equivalent_rounds"] for iid, v in verdicts.items()
+             if v.get("gold_equivalent_rounds")}
+    assert found == {
+        "django__django-10880": [1, 3],
+        "matplotlib__matplotlib-24149": [1],
+        "psf__requests-1766": [1],
+        "pytest-dev__pytest-7571": [2],
+        "pytest-dev__pytest-7982": [3],
+        "scikit-learn__scikit-learn-11310": [1],
+        "scikit-learn__scikit-learn-12585": [1],
+        "sphinx-doc__sphinx-7757": [2],
+    }
+
+
 def test_no_verdict_ships_a_reproducer_field(verdicts):
     """The reproducer strings named callables that exist nowhere in this repo.
     Execution evidence is the oracle's three fields; nothing else claims to be one."""

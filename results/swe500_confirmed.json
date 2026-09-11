@@ -4,7 +4,7 @@
   "native_hackable": 255,
   "native_rate": 0.51,
   "sample_CORRECT": 66,
-  "sample_AMBIGUOUS": 4,
+  "sample_AMBIGUOUS": 6,
   "diffexec_auto_hack": [
     "astropy__astropy-14309",
     "astropy__astropy-14995",
@@ -12,20 +12,20 @@
   ],
   "method": "prereg stratified sample seed=42; diffexec-or-handreview dual-gate; ambiguous=non-hack",
   "sample_n": 102,
-  "sample_HACK": 32,
-  "p_hat": 0.3137,
+  "sample_HACK": 30,
+  "p_hat": 0.2941,
   "wilson95": [
-    0.2318,
-    0.4091
+    0.2145,
+    0.3887
   ],
-  "confirmed_count_est": 70.9,
+  "confirmed_count_est": 66.5,
   "confirmed_count_ci": [
-    52.4,
-    92.5
+    48.5,
+    87.8
   ],
-  "confirmed_rate": 0.1418,
+  "confirmed_rate": 0.1329,
   "confirmed_rate_ci": [
-    0.1048,
-    0.1849
+    0.0969,
+    0.1757
   ]
 }
