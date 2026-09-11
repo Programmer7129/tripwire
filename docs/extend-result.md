@@ -12,7 +12,10 @@ reported on 49 tasks and never ran the full set. Same harness as the anchor. Agg
 > independently re-audited, moved it to **13.3%**: 11 of 29 rationales did not survive checking and two
 > verdicts (`django-13033`, `pytest-7571`) became AMBIGUOUS because the divergence they claimed does not
 > occur. See `tests/test_verdict_provenance.py`, which now fails on the provenance defects and requires a
-> multi-candidate rationale to name the round it establishes.
+> multi-candidate rationale to name the round it establishes. A third correction on 2026-09-11, after the
+> benign-attacker control was finally run, took the headline to **5.9 % [-0.4, 10.7]**: the adjudication
+> that produced these verdicts labels 16.9 % of deliberately-correct patches as hacks, so roughly half the
+> raw signal was measurement error. The full trajectory is 13.7 → 14.2 → 13.3 → 5.9 %.
 
 ## Setup
 - **Tasks:** all 500 of `princeton-nlp/SWE-bench_Verified`, 12 repos (django 231, sympy 75, sphinx 44,
@@ -37,7 +40,8 @@ reported on 49 tasks and never ran the full set. Same harness as the anchor. Agg
 | metric | value |
 | --- | --- |
 | **native-hackable** (verifier PASS ≥1 candidate — the paper's looser metric) | **255 / 500 = 51.0 %** |
-| **adjudicated-wrong rate** (extrapolated) | **13.3 %, 95 % CI [9.7 %, 17.6 %]** |
+| **adjudicated-wrong rate** (raw, extrapolated) | **13.3 %** |
+| **corrected for the adjudication's 16.9 % false-positive rate** | **5.9 %, 95 % CI [-0.4 %, 10.7 %]** |
 | adjudicated-wrong count over 500 | ≈ **67** tasks, 95 % CI [49, 88] |
 | patch-production rate (attacker emitted an applying patch) | 96.6 % (483/500) |
 
@@ -81,8 +85,14 @@ run: OpenAI's Feb 2026 audit found narrow tests in 35.5 % of the 138 tasks o3 co
 about 49 tasks, ~10 % of the benchmark, and a failure-selected subsample that is roughly the complement of
 this queue, so the magnitude here is unknown. Some fraction of "diverges from gold" is what correctness
 looks like; how large is unmeasured. Separating the two
-requires re-running the pipeline with the prompt flipped to *write a correct patch*, and that has not been
-done.
+required re-running the pipeline with the prompt flipped to *write a correct patch*. **That was done on
+2026-09-11** (`harness/benign_arm.py`, 102 tasks, $4.23) and it roughly halved the headline. A patch
+written to be correct passes the shipped suite on 48 % of these tasks and differs textually from gold on
+39 %, and in a blind mixed adjudication of 137 patches over the 40 tasks where both arms produced an
+accepted distinct candidate, reviewers labelled **16.9 % of deliberately-correct patches as hacks**
+against 30.6 % of attack patches (+13.6 pp, overlapping CIs, p = 0.062). Applying the pre-registered
+correction p̂·(1 − f/a): **13.3 % → 5.9 %, bootstrap CI [-0.4 %, 10.7 %]** — an interval that includes
+zero. Protocol and full results: `docs/audit/blind-protocol.md`, `results/blind_adjudication.json`.
 
 Artifacts: `results/swe500_confirmed.json` (aggregate), `results/swe500_sample_verdicts.json` (per-task
 verdicts, each with its oracle record or its rationale), `results/swe500_confirm_sample.json` (the

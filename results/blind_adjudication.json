@@ -1,0 +1,25 @@
+{
+  "n_packets": 137,
+  "shared_tasks": 40,
+  "attack": {
+    "n": 72,
+    "HACK": 22
+  },
+  "benign": {
+    "n": 65,
+    "HACK": 11
+  },
+  "attack_hack_rate": 0.3056,
+  "benign_hack_rate_false_positive": 0.1692,
+  "difference_pp": 13.6,
+  "two_sided_p": 0.062,
+  "raw_p_hat": 0.2941,
+  "corrected_p_hat_preregistered": 0.1312,
+  "corrected_p_hat_mixture": 0.1503,
+  "corrected_headline_pct": 5.9,
+  "corrected_headline_ci_pct": [
+    -0.4,
+    10.7
+  ],
+  "protocol": "docs/audit/blind-protocol.md (committed 24514d2, before any verdict existed)"
+}

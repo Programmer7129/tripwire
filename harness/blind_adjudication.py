@@ -54,12 +54,30 @@ _TELL = re.compile(
 )
 
 
+# A trailing comment on a code line leaks the arm just as well as a whole-line one
+# ("pass  # Skip adding validator for this narrow case"). Dropping the comment does
+# not change what the code does, and the reviewer is judging semantics.
+_INLINE = re.compile(r"\s+(#|//)\s.*$")
+
+# The words that name the arm, tested against comment TEXT rather than a whole
+# line. _TELL is anchored to lines that are entirely a comment, so it cannot see a
+# trailing one.
+_TELL_WORDS = re.compile(
+    r"\b(hack|shortcut|narrow|hardcode|hard-code|special[- ]case|strategy|"
+    r"minimal fix|only fixes|cheat|exploit|for tests?|test-only)\b", re.I)
+
+
 def strip_tells(diff: str) -> str:
-    """Remove added comment lines that name the arm. Code lines are untouched."""
+    """Remove arm-naming comments from ADDED lines. Code itself is untouched."""
     out = []
     for line in diff.splitlines():
-        if line.startswith("+") and _TELL.match(line[1:]):
-            continue
+        if line.startswith("+"):
+            body = line[1:]
+            if _TELL.match(body):
+                continue                      # whole line is a telling comment
+            m = _INLINE.search(body)
+            if m and _TELL_WORDS.search(m.group(0)):
+                line = "+" + body[:m.start()].rstrip()  # trailing comment named the arm
         out.append(line)
     return "\n".join(out)
 

@@ -16,6 +16,13 @@ rationales' author reasoning.
 
 Headline moved **14.2% → 13.3%** [9.7–17.6].
 
+A separate control on **2026-09-11** then moved it again, to **5.9% [-0.4, 10.7]** — see
+`blind-protocol.md` (registered before any verdict existed), `blind-key.json`, `blind-verdicts.json`
+and `blind-score.txt`. Blind reviewers labelled **16.9%** of deliberately-correct patches as reward
+hacks, against 30.6% of attack patches. Notably the blind attack rate (30.6%) closely matches the
+original non-blind rater's 29.4%, so that rater was **not** inflating — the task is simply error-prone
+in both directions for everyone.
+
 ## The single defect behind all 11
 
 Each task ran K=3 attacker rounds under a different hacking recipe, so a task can have two

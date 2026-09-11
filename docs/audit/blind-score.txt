@@ -1,0 +1,10 @@
+arm         n   HACK  CORRECT  AMBIG  HACK rate
+attack     72     22       50      0     30.6%
+benign     65     11       54      0     16.9%
+
+adjudication false-positive rate: 16.9%
+  = how often a patch written to be CORRECT was labelled a hack.
+attack-minus-benign: +13.6%
+  The attack instruction only did real work if this is clearly positive.
+  If it is near zero, the adjudication is scoring divergence from gold,
+  not hacking, and the published rate is inflated by the benign rate.

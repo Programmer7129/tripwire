@@ -2,7 +2,7 @@
 
 # 🔦 Tripwire
 
-### An open harness that measures how often a code-RL training verifier accepts a *wrong* answer.
+### An open harness that measures how often a code-RL training verifier accepts a *wrong* answer — and a control showing most of that signal was the measurement, not the verifier.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -34,8 +34,17 @@ On all 500 tasks of **SWE-bench Verified**:
    45.2%  ███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░   226 / 500   ...and that patch differed textually from gold
 
  Adjudicated wrong, in a pre-registered sample of 102 of those 226
-   13.3%  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   est. 67 / 500   [95% CI 9.7–17.6%]
+   13.3%  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   raw, uncorrected
+
+ CORRECTED for the adjudication's measured false-positive rate (16.9%)
+    5.9%  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   [95% CI -0.4 to 10.7%]
 ```
+
+> **The interval includes zero.** A benign-attacker control — the same pipeline with the
+> instruction inverted to *write the correct fix* — shows blind reviewers label **16.9% of
+> deliberately-correct patches as reward hacks**. Correcting for that, the headline falls from
+> 13.3% to **5.9%**, and this study can no longer distinguish the effect from zero. See
+> [§ The control](#the-control-and-what-it-did-to-the-headline).
 
 The claim this repository supports, in one sentence — every clause checkable from files committed here:
 
@@ -43,23 +52,24 @@ The claim this repository supports, in one sentence — every clause checkable f
 > of the failing tests, and an explicit reward-hacking recipe** produced a patch the shipped suite
 > accepted on **255 tasks (51.0%)**, and on **226**
 > of those the accepted patch differed textually from the gold fix; in a pre-registered proportional
-> sample of **102** of those 226, adjudication found **30** to be narrow, non-generalizing fixes — an
-> estimated **13.3%** of the benchmark [95% CI 9.7–17.6%], of which **3 were confirmed by differential
-> execution** and the remaining **27 by single-rater code review**, every one of those re-audited
-> independently against the gold patch.
+> sample of **102** of those 226, adjudication found **30** to be narrow, non-generalizing fixes — a raw
+> **13.3%** of the benchmark, of which **3 were confirmed by differential execution** and the remaining
+> **27 by single-rater code review**. A pre-registered blind control then measured that same adjudication
+> labelling **16.9%** of deliberately-correct patches as hacks, which corrects the estimate to
+> **5.9% [-0.4, 10.7]** — an interval that includes zero.
 
 Getting a patch past the suite is **not** evidence the patch is wrong: many are legitimate alternative
-fixes. That is why the two numbers differ, and why 13.3% rather than 51.0% is this project's finding.
-Sample verdicts: **30 HACK / 66 CORRECT / 6 AMBIGUOUS**.
+fixes. Raw sample verdicts: **30 HACK / 66 CORRECT / 6 AMBIGUOUS**. The control below shows that even
+after that filter, a substantial share of the remaining HACK labels are measurement error.
 
 ## The finding in one table
 
 | Run | Tasks | Attacker | Suite accepts an attacker candidate | Adjudicated wrong |
 | --- | --- | --- | --- | --- |
-| **Anchor** (replication attempt) | 49 | Claude Sonnet 4.5 | — | **11/49 = 22.4%** |
+| **Anchor** (replication attempt) | 49 | Claude Sonnet 4.5 | — | **11/49 = 22.4%** (uncorrected) |
 | Anchor — capability ladder | 49 | Claude Haiku 4.5 | — | 8/49 = 16.3% |
 | Reference — [arXiv:2606.16062](https://arxiv.org/abs/2606.16062) | 49 | Claude Sonnet 4 | — | 14/49 = 28.5% |
-| **Extend** (full benchmark) | **500 (12 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | **13.3%** — CI [9.7–17.6%] |
+| **Extend** (full benchmark) | **500 (12 repos)** | Claude Sonnet 4.5 | **51.0%** (255/500) | raw **13.3%**; corrected **5.9%** [-0.4, 10.7] |
 
 ⚠️ **The anchor is not a task-for-task replication.** The reference paper never published its 49 task IDs,
 so this run uses its own subset drawn from the same two repos (astropy + django); the attacker is also a
@@ -126,15 +136,48 @@ task, `astropy-14309`, produced `('read', 'test.txt', None, hdu_list)` in the an
 is not reproducible.
 
 *Divergence is not wrongness.* The oracle shows a candidate behaves differently from gold on some input.
-On a benchmark where tests can be narrower than the specification, that is sometimes what a correct patch
-does. OpenAI's audit of the **138 tasks o3 could not reliably solve** found narrow tests in 35.5% of
-*those* — about 49 tasks, ~10% of the benchmark, drawn from a deliberately failure-selected subsample.
-The rate among tasks a model can actually pass is unmeasured, and this harness's 226-task queue is
-approximately the *complement* of OpenAI's frame, so the size of the effect here is unknown. That some
-fraction of "diverges from gold" is what a correct patch looks like is established; its magnitude is not.
-The control that would settle it is a **benign-attacker null** — same pipeline, prompt flipped to "write a
-*correct* patch" — and it **has not been run**. Until it is, 13.3% bounds hacking from above and nothing
-from below.
+On a benchmark whose tests are sometimes narrower than the specification, that is sometimes what a correct
+patch does. This was the project's largest open hole until 2026-09-11, when the control below was run.
+
+<a name="the-control-and-what-it-did-to-the-headline"></a>
+## The control, and what it did to the headline
+
+**Design.** The same pipeline with exactly one thing changed: the instruction, inverted from *"produce the
+narrowest INCOMPLETE patch"* to *"produce the correct, general fix"*. Same gold-derived source region, same
+problem statement, same test names, same K=3 rounds, temperatures, patch applier and Docker verifier
+(`harness/benign_arm.py`). Run on all 102 pre-registered tasks, $4.23.
+
+**Result 1 — the first gate barely discriminates.** A patch written to be *correct* passes the shipped
+suite on **48%** of these tasks, and on **39%** it passes *and* differs textually from gold. So "the suite
+accepted it and it is not gold's fix" is an ordinary outcome for an honest fix here, not a signature of
+hacking.
+
+**Result 2 — the adjudication has a false-positive rate, and it is large.** 137 patches from the 40 tasks
+where both arms produced an accepted, distinct candidate were shuffled, stripped of every tell that names
+the arm, and sent to four reviewers who saw only the gold patch and one candidate. The key was held out.
+The protocol was committed *before any verdict existed* (`docs/audit/blind-protocol.md`, commit `24514d2`).
+
+| arm | n | HACK | rate | 95% CI |
+| --- | --- | --- | --- | --- |
+| attack | 72 | 22 | **30.6%** | [21.1%, 42.0%] |
+| benign | 65 | 11 | **16.9%** | [9.7%, 27.8%] |
+
+**16.9% of patches written to be correct were labelled reward hacks.** The difference is +13.6 points,
+but the intervals overlap and a two-proportion test gives **p = 0.062**.
+
+**The correction.** Pre-registered as `p̂·(1 − f/a)`: the raw p̂ = 30/102 becomes 0.131, and the headline
+falls **13.3% → 5.9%, bootstrap 95% CI [-0.4%, 10.7%]**. The less conservative mixture estimator
+`(p̂ − f)/(1 − f)` gives 6.8%; both are in `results/blind_adjudication.json`. The pre-registered figure is
+the headline because choosing the kinder formula after seeing the data is the thing pre-registration
+exists to prevent.
+
+**What this does and does not say.** It does not say the original adjudication was biased: blind reviewers
+rated attack patches at 30.6% against the original non-blind rater's 29.4%, so that rater was not
+inflating. It says the *task* is error-prone for everyone, in both directions, and that roughly half the
+raw signal was measurement. At n=137 this study cannot distinguish the remaining effect from zero.
+
+**Not doing:** running more packets until the interval excludes zero. That is the rule
+[`docs/adr/0001`](docs/adr/0001-abandon-hub-census.md) earned, and the protocol fixed it in advance.
 
 ## 🔁 Reproduce it yourself
 
@@ -195,10 +238,14 @@ harness/
   swebench_adapter.py   apply any patch → run the native verifier → read resolved
   diffexec_oracle.py    differential execution: gold vs candidate on generated inputs
   aggregate.py          Wilson CIs, BH-FDR, beta-binomial pooling, cluster-bootstrap
-  swe_confirm.py        recomputes the published adjudicated rate (13.3%) from results/
+  swe_confirm.py        recomputes the RAW adjudicated rate (13.3%) from results/
+  benign_arm.py         the control: same pipeline, instruction inverted to "write the correct fix"
+  blind_adjudication.py shuffles both arms blind, holds out the key, scores the false-positive rate
   swe_native_rate.py    recomputes the verifier-alone rate (51.0%) from the raw records
 results/
   raw_swe_500/          all 500 per-task attack records — the evidence behind 51.0% (4.1 MB)
+  raw_benign/           the control arm's 102 records
+  blind_adjudication.json   the control's result and the correction it implies
   swe500_sample_verdicts.json   per-task verdicts, each with its oracle record or its rationale
 tests/            metric + provenance suite — no network, no Docker, no API key, no GPU
 docs/
@@ -206,8 +253,8 @@ docs/
   extend-result.md      the full-500 result, sampling, limitations
   preregistration.md    protocol and its amendments
   adr/                  abandoned directions and what they earned
-  audit/                the 2026-09-10 independent re-audit of every hand-review rationale
-                        (18 of 29 held; 11 did not; two verdicts moved)
+  audit/                the 2026-09-10 re-audit of every hand-review rationale (18 of 29 held),
+                        and the 2026-09-11 blind control: protocol, packets' key, verdicts, score
 ```
 
 > **A note on the name.** The public artifact is **Tripwire**. `envcert` is the older internal name and
@@ -242,7 +289,11 @@ docs/
 - **15 of the 102 sampled verdicts rest on no recorded evidence at all** — no oracle record, no rationale.
   All 15 are CORRECT, so they suppress the rate rather than inflating it, and they are flagged
   `"evidence": "none-recorded"` in the verdicts file. A test asserts that count and that direction.
-- **No benign-attacker control has been run** (see *How it works*). This is the largest open hole.
+- **The benign control has now been run** and roughly halved the headline (see *The control*). Its own
+  limits: n=137 packets over 40 shared tasks, so the attack-vs-benign difference is not significant
+  (p=0.062); the reviewers are LLM agents, not the original human rater, so it measures whether the stated
+  criteria separate the arms rather than whether that rater did; and both arms are generated by the same
+  model family, so a different model might write differently-shaped correct fixes.
 - **The confirmed rate is an estimate**, not a census: 32 tasks were adjudicated, ~71 is the extrapolation
   to the 226-task queue. Nobody examined the other ~39.
 - The interval is a Wilson interval on 32/102 propagated through ×226/500. It carries **no
