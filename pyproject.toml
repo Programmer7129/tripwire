@@ -48,7 +48,7 @@ dependencies = []
 [project.optional-dependencies]
 # the SWE-bench lane: native verifier + dataset (also needs Docker)
 swe = [
-    "swebench>=3.0.0",
+    "swebench>=3.0.0,<5",  # 5.x dropped --cache_level/--namespace; see harness/swebench_adapter.py
     "datasets>=2.19.0",
 ]
 # LLM attacker — one of:

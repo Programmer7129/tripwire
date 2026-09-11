@@ -5,7 +5,9 @@
 # metrics can be recomputed with none of this installed.
 
 # Core
-swebench>=3.0.0          # native SWE-bench verifier (run_evaluation, grading) + Docker harness
+swebench>=3.0.0,<5       # native SWE-bench verifier. UPPER PIN IS LOAD-BEARING: 5.x removed
+                         # --cache_level/--namespace, so run_evaluation exits rc=2 and every
+                         # patch silently reports patch_applied=false. Found 2026-09-10.
 datasets>=2.19.0         # loads princeton-nlp/SWE-bench_Verified
 
 # LLM attacker — one of:
